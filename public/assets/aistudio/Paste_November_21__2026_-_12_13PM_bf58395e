@@ -1,0 +1,2985 @@
+<!-- Evacuation Planner -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evacuation Planner — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-sm">
+      <div class="flex items-center gap-gutter-sm">
+        <a href="../home-dashboard/HomeDashboard.html" aria-label="Back to Home" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+          <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+        </a>
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Evacuation Planner</h1>
+          <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-success">Saved Offline • Dadar Plan</p>
+        </div>
+      </div>
+      <button type="button" onclick="document.getElementById(&#39;plan-modal&#39;).classList.remove(&#39;hidden&#39;)" class="min-h-[36px] px-gutter-md py-gutter-xs rounded bg-light-primary text-light-on-primary font-label text-label-md">Edit Plan</button>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- Origin -> Destination Summary -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-sm">
+        <div class="flex items-center gap-gutter-md">
+          <span class="w-3 h-3 rounded-full bg-light-primary shrink-0"></span>
+          <div class="min-w-0">
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">From Home Location</span>
+            <span id="plan-origin" data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Shivaji Park, Dadar West</span>
+          </div>
+        </div>
+        <div class="ml-1.5 h-4 border-l-2 border-dashed border-light-outline-variant"></div>
+        <div class="flex items-center gap-gutter-md">
+          <span class="w-3 h-3 rounded-full bg-light-success shrink-0"></span>
+          <div class="min-w-0">
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Destination Relief Shelter</span>
+            <span id="plan-dest" data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">BMC Dadar Relief Shelter</span>
+          </div>
+        </div>
+        <div class="pt-gutter-sm border-t border-light-outline-variant flex items-center justify-between">
+          <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface-variant">Meeting Point: <span id="plan-meet" class="text-light-on-surface">Shivaji Park Gate 2</span></span>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-secondary">4 Members</span>
+        </div>
+      </section>
+
+      <!-- Road Blockage / Flood Warning -->
+      <div role="alert" class="p-gutter-md rounded-md bg-light-warning-container text-light-on-warning-container flex items-start gap-gutter-sm">
+        <span class="material-symbols-outlined text-[20px] shrink-0 mt-0.5" aria-hidden="true">water</span>
+        <p data-design-text-token="body-md" class="font-body text-body-md">Hindmata Flyover &amp; Dr. Ambedkar Rd underpass have active waterlogging. Use elevated Gokhale Road route.</p>
+      </div>
+
+      <!-- Recommended Route -->
+      <section class="flex flex-col gap-gutter-sm">
+        <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Evacuation Routes</h2>
+
+        <article class="bg-light-surface rounded-md border-2 border-light-success p-gutter-lg shadow-sm flex flex-col gap-gutter-sm">
+          <div class="flex items-center justify-between gap-gutter-sm">
+            <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-success-container text-light-on-success-container font-label text-label-sm">Recommended • Clear</span>
+            <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface tabular-nums">1.4 km • 6 min</span>
+          </div>
+          <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Via Gokhale Road North</h3>
+          <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">High elevation, zero reported blockages, street lighting active.</p>
+          <a href="../safe-shelter-map/SafeShelterMap.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded bg-light-success text-light-on-success font-label text-label-lg inline-flex items-center justify-center gap-gutter-xs">
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">directions</span>
+            <span data-design-text-token="label-lg">Start Safe Route</span>
+          </a>
+        </article>
+
+        <!-- Alternative Route -->
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+          <div class="flex items-center justify-between gap-gutter-sm">
+            <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-warning-container text-light-on-warning-container font-label text-label-sm">Caution • Minor Water</span>
+            <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface-variant tabular-nums">2.2 km • 12 min</span>
+          </div>
+          <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Via Tilak Bridge &amp; Dadar TT</h3>
+          <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Slow traffic near Dadar East approach due to waterlogging.</p>
+        </article>
+      </section>
+
+      <!-- Important Evacuation Instructions -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-xs">
+        <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Before Leaving Home</h2>
+        <ul class="list-disc pl-5 text-body-md text-light-on-surface-variant flex flex-col gap-gutter-xs">
+          <li>Grab your Go-Bag and waterproof Aadhaar/medical pouch.</li>
+          <li>Turn off main MCB electricity switch and LPG cylinder regulator.</li>
+          <li>Check in on Family Safety once you reach the meeting point.</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <!-- Edit Plan Modal -->
+    <div id="plan-modal" class="hidden fixed inset-0 z-50 bg-light-on-surface/50 flex items-end justify-center p-gutter-lg">
+      <div class="bg-light-surface rounded-lg w-full max-w-[390px] p-gutter-xl flex flex-col gap-gutter-md shadow-xl">
+        <div class="flex items-center justify-between">
+          <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Update Evacuation Plan</h2>
+          <button type="button" onclick="document.getElementById(&#39;plan-modal&#39;).classList.add(&#39;hidden&#39;)" aria-label="Close" class="w-10 h-10 rounded-full hover:bg-light-surface-container inline-flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Family Meeting Point</span>
+          <input id="inp-meet" type="text" value="Shivaji Park Gate 2" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Primary Shelter</span>
+          <select id="inp-shelter" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+            <option>BMC Dadar Relief Shelter</option>
+            <option>Matunga Community Hall Camp</option>
+            <option>Worli Sea Face High School</option>
+          </select>
+        </label>
+        <button type="button" onclick="savePlan()" class="min-h-[48px] rounded bg-light-primary text-light-on-primary font-label text-label-lg">Save Plan Offline</button>
+      </div>
+    </div>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+  <script>
+    function savePlan() {
+      document.getElementById('plan-meet').textContent = document.getElementById('inp-meet').value;
+      document.getElementById('plan-dest').textContent = document.getElementById('inp-shelter').value;
+      document.getElementById('plan-modal').classList.add('hidden');
+    }
+  </script>
+
+
+</body></html>
+
+<!-- Community Incident Reporting -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Incident Reporting — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center gap-gutter-sm">
+      <a href="../home-dashboard/HomeDashboard.html" aria-label="Back to Home" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+        <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+      </a>
+      <div>
+        <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Incident Reporting</h1>
+        <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant">Report hazards to BMC &amp; SDMA</p>
+      </div>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- View Tabs: Report Form / My Reports -->
+      <div class="grid grid-cols-2 gap-gutter-xs bg-light-surface-container p-gutter-xs rounded-md" role="tablist">
+        <button type="button" id="tab-submit" onclick="switchTab(&#39;submit&#39;)" class="min-h-[40px] rounded bg-light-surface text-light-primary font-label text-label-md shadow-sm">Report Incident</button>
+        <button type="button" id="tab-reports" onclick="switchTab(&#39;reports&#39;)" class="min-h-[40px] rounded text-light-on-surface-variant font-label text-label-md">My Reports (2)</button>
+      </div>
+
+      <!-- TAB 1: SUBMIT INCIDENT FORM -->
+      <section id="view-submit" class="flex flex-col gap-gutter-md">
+        <form onsubmit="submitReport(event)" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-md">
+          <label class="flex flex-col gap-gutter-xs">
+            <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface">Incident Type</span>
+            <select id="inc-type" class="min-h-[44px] w-full px-gutter-md py-gutter-sm rounded border border-light-outline-variant bg-light-surface text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+              <option>Flooded Road / Waterlogging</option>
+              <option>Fallen Tree / Road Blockage</option>
+              <option>Electric Hazard / Fallen Wire</option>
+              <option>Fire</option>
+              <option>Damaged Building / Landslide</option>
+              <option>Person Needing Rescue</option>
+            </select>
+          </label>
+
+          <div class="flex flex-col gap-gutter-xs">
+            <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface">Severity</span>
+            <div class="grid grid-cols-3 gap-gutter-sm">
+              <button type="button" onclick="pickSev(this)" class="sev-btn min-h-[40px] rounded border border-light-outline-variant text-label-md font-label text-light-on-surface">Low</button>
+              <button type="button" onclick="pickSev(this)" class="sev-btn min-h-[40px] rounded border-2 border-light-warning bg-light-warning-container text-light-on-warning-container text-label-md font-label">High</button>
+              <button type="button" onclick="pickSev(this)" class="sev-btn min-h-[40px] rounded border border-light-outline-variant text-label-md font-label text-light-on-surface">Critical</button>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-gutter-xs">
+            <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface">Photo / Video Evidence</span>
+            <div class="grid grid-cols-2 gap-gutter-sm">
+              <button type="button" onclick="this.textContent=&#39;Photo Attached ✓&#39;" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-dashed border-light-primary text-light-primary font-label text-label-md inline-flex items-center justify-center gap-gutter-xs">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">add_a_photo</span>
+                <span>Add Photo</span>
+              </button>
+              <button type="button" onclick="this.textContent=&#39;Video Attached ✓&#39;" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-dashed border-light-outline text-light-on-surface-variant font-label text-label-md inline-flex items-center justify-center gap-gutter-xs">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">videocam</span>
+                <span>Add Video</span>
+              </button>
+            </div>
+          </div>
+
+          <label class="flex flex-col gap-gutter-xs">
+            <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface">GPS Location</span>
+            <input type="text" value="Hindmata Junction, Dadar East (19.0112° N, 72.8421° E)" class="min-h-[44px] w-full px-gutter-md py-gutter-sm rounded border border-light-outline-variant bg-light-surface-container-low text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+          </label>
+
+          <label class="flex flex-col gap-gutter-xs">
+            <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface">Description</span>
+            <textarea rows="3" placeholder="Describe water depth, blockage, or people at risk..." class="w-full px-gutter-md py-gutter-sm rounded border border-light-outline-variant bg-light-surface text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary"></textarea>
+          </label>
+
+          <button type="submit" class="w-full min-h-[48px] px-gutter-lg py-gutter-md rounded-md bg-light-primary text-light-on-primary font-label text-label-lg hover:opacity-95">
+            <span data-design-text-token="label-lg">Submit Incident Report</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- TAB 2: MY REPORTS & STATUS TIMELINE -->
+      <section id="view-reports" class="hidden flex flex-col gap-gutter-md">
+        <div id="submit-confirm" class="hidden p-gutter-md rounded-md bg-light-success-container text-light-on-success-container flex items-start gap-gutter-sm">
+          <span class="material-symbols-outlined text-[20px] shrink-0" aria-hidden="true">check_circle</span>
+          <div>
+            <p data-design-text-token="label-lg" class="font-label text-label-lg">Report Submitted • #INC-MH-4092</p>
+            <p data-design-text-token="body-md" class="font-body text-body-md">Forwarded to BMC Ward F/South Disaster Cell.</p>
+          </div>
+        </div>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant overflow-hidden shadow-sm">
+          <img src="https://lh3.googleusercontent.com/aida/ALJJyrCOmlRhnLf7tPIn4NPC0nEJ35vXXoTTS9L8ryS22q2XjlOC5KXhrWCMOaoKEFvDO85aboEAaSgZ0FsO1W9wW1K9v7Q5xNc23nVsoBm44_4oSXQ_3Q98uWT1ebAmRw6rlO39DKeuIrSgsNhRyi4k1wlj5pVvJ_ns9RSY4ryiMHcml95QPRzlmo2TNjOJzAZjMGqxeT_LyQybYbYMurd0htMQ7KI0aUqNngra1A7-2Ac18cJl8rR1-_RpZ64U-HB6-Cw" alt="Hindmata Junction waterlogging" class="w-full h-32 object-cover">
+          <div class="p-gutter-lg flex flex-col gap-gutter-md">
+            <div class="flex items-center justify-between">
+              <span data-design-text-token="mono-md" class="font-mono text-mono-md text-light-on-surface-variant">#INC-MH-4081</span>
+              <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-secondary-container text-light-on-secondary-container font-label text-label-sm">Response Initiated</span>
+            </div>
+            <div>
+              <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Waterlogging at Hindmata Flyover</h2>
+              <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Submitted 13:50 IST • BMC Dewatering Pump Dispatched</p>
+            </div>
+
+            <!-- Status Timeline -->
+            <div class="flex flex-col gap-gutter-xs pt-gutter-sm border-t border-light-outline-variant">
+              <div class="flex items-center gap-gutter-sm">
+                <span class="w-2.5 h-2.5 rounded-full bg-light-success"></span>
+                <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface">Submitted &amp; Verified (13:55 IST)</span>
+              </div>
+              <div class="flex items-center gap-gutter-sm">
+                <span class="w-2.5 h-2.5 rounded-full bg-light-secondary"></span>
+                <span data-design-text-token="label-md" class="font-label text-label-md text-light-secondary">Response Initiated (14:08 IST)</span>
+              </div>
+              <div class="flex items-center gap-gutter-sm">
+                <span class="w-2.5 h-2.5 rounded-full bg-light-outline-variant"></span>
+                <span data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface-variant">Resolved (Pending)</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+    </main>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+  <script>
+    function switchTab(t) {
+      const isSub = t === 'submit';
+      document.getElementById('view-submit').classList.toggle('hidden', !isSub);
+      document.getElementById('view-reports').classList.toggle('hidden', isSub);
+      document.getElementById('tab-submit').className = isSub
+        ? 'min-h-[40px] rounded bg-light-surface text-light-primary font-label text-label-md shadow-sm'
+        : 'min-h-[40px] rounded text-light-on-surface-variant font-label text-label-md';
+      document.getElementById('tab-reports').className = !isSub
+        ? 'min-h-[40px] rounded bg-light-surface text-light-primary font-label text-label-md shadow-sm'
+        : 'min-h-[40px] rounded text-light-on-surface-variant font-label text-label-md';
+    }
+
+    function pickSev(btn) {
+      document.querySelectorAll('.sev-btn').forEach(b => {
+        b.className = 'sev-btn min-h-[40px] rounded border border-light-outline-variant text-label-md font-label text-light-on-surface';
+      });
+      btn.className = 'sev-btn min-h-[40px] rounded border-2 border-light-warning bg-light-warning-container text-light-on-warning-container text-label-md font-label';
+    }
+
+    function submitReport(e) {
+      e.preventDefault();
+      switchTab('reports');
+      document.getElementById('submit-confirm').classList.remove('hidden');
+    }
+  </script>
+
+
+</body></html>
+
+<!-- Family Safety & Check-In -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Safety &amp; Check-In — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-sm">
+      <div class="flex items-center gap-gutter-sm">
+        <a href="../home-dashboard/HomeDashboard.html" aria-label="Back to Home" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+          <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+        </a>
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Family Safety</h1>
+          <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant">Sharma Family Group (4 Members)</p>
+        </div>
+      </div>
+      <button type="button" onclick="document.getElementById(&#39;invite-modal&#39;).classList.remove(&#39;hidden&#39;)" class="min-h-[36px] px-gutter-md py-gutter-xs rounded bg-light-primary text-light-on-primary font-label text-label-md">+ Add</button>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- One-Tap Check-In Banner -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-md">
+        <div>
+          <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Your Emergency Check-In</h2>
+          <p id="checkin-status" data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Let your family know your current status and location.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-gutter-sm">
+          <button type="button" onclick="checkIn(&#39;safe&#39;)" class="min-h-[48px] px-gutter-md py-gutter-sm rounded-md bg-light-success text-light-on-success font-label text-label-lg inline-flex items-center justify-center gap-gutter-xs">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">check_circle</span>
+            <span data-design-text-token="label-lg">I am Safe</span>
+          </button>
+          <button type="button" onclick="checkIn(&#39;help&#39;)" class="min-h-[48px] px-gutter-md py-gutter-sm rounded-md bg-light-error text-light-on-error font-label text-label-lg inline-flex items-center justify-center gap-gutter-xs">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">emergency</span>
+            <span data-design-text-token="label-lg">Need Help</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Family Meeting Point -->
+      <section class="bg-light-primary-container text-light-on-primary-container rounded-md p-gutter-md flex items-center justify-between gap-gutter-md">
+        <div class="flex items-center gap-gutter-sm min-w-0">
+          <span class="material-symbols-outlined text-[22px] shrink-0" aria-hidden="true">flag</span>
+          <div class="min-w-0">
+            <span data-design-text-token="label-sm" class="font-label text-label-sm block">Meeting Point</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md block">Shivaji Park Gate 2, Dadar</span>
+          </div>
+        </div>
+        <a href="../evacuation-planner/EvacuationPlanner.html" class="font-label text-label-md underline shrink-0">Plan</a>
+      </section>
+
+      <!-- Family Members List -->
+      <section class="flex flex-col gap-gutter-sm">
+        <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Family Members</h2>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md">
+          <div class="min-w-0">
+            <div class="flex items-center gap-gutter-sm">
+              <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Meera Sharma</h3>
+              <span class="px-gutter-sm py-0.5 rounded-full bg-light-success-container text-light-on-success-container font-label text-label-sm">Safe</span>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Home, Dadar West • 12m ago</p>
+          </div>
+          <div class="flex items-center gap-gutter-xs shrink-0">
+            <a href="tel:+919820411111" aria-label="Call Meera" class="w-10 h-10 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+            </a>
+            <button type="button" onclick="alert(&#39;SMS check-in sent to Meera&#39;)" aria-label="Message Meera" class="w-10 h-10 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">chat</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md">
+          <div class="min-w-0">
+            <div class="flex items-center gap-gutter-sm">
+              <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Rajesh Sharma (Father)</h3>
+              <span class="px-gutter-sm py-0.5 rounded-full bg-light-warning-container text-light-on-warning-container font-label text-label-sm">Checking In</span>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Thane West • 38m ago</p>
+          </div>
+          <div class="flex items-center gap-gutter-xs shrink-0">
+            <a href="tel:+919820422222" aria-label="Call Rajesh" class="w-10 h-10 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+            </a>
+            <button type="button" onclick="alert(&#39;Check-in ping sent to Rajesh&#39;)" aria-label="Message Rajesh" class="w-10 h-10 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">chat</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md">
+          <div class="min-w-0">
+            <div class="flex items-center gap-gutter-sm">
+              <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Ananya Sharma</h3>
+              <span class="px-gutter-sm py-0.5 rounded-full bg-light-surface-container text-light-on-surface-variant font-label text-label-sm">Offline</span>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Matunga College • Last seen 2h ago</p>
+          </div>
+          <div class="flex items-center gap-gutter-xs shrink-0">
+            <a href="tel:+919820433333" aria-label="Call Ananya" class="w-10 h-10 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+            </a>
+          </div>
+        </article>
+      </section>
+
+    </main>
+
+    <!-- Invite Family Member Modal -->
+    <div id="invite-modal" class="hidden fixed inset-0 z-50 bg-light-on-surface/50 flex items-end justify-center p-gutter-lg">
+      <div class="bg-light-surface rounded-lg w-full max-w-[390px] p-gutter-xl flex flex-col gap-gutter-md shadow-xl">
+        <div class="flex items-center justify-between">
+          <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Add Family Member</h2>
+          <button type="button" onclick="document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;)" aria-label="Close" class="w-10 h-10 rounded-full hover:bg-light-surface-container inline-flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Name</span>
+          <input type="text" placeholder="e.g., Sunita Sharma" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Mobile Number (+91)</span>
+          <input type="tel" placeholder="98XXX XXXXX" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <button type="button" onclick="document.getElementById(&#39;invite-modal&#39;).classList.add(&#39;hidden&#39;); alert(&#39;Family invite SMS sent!&#39;);" class="min-h-[48px] rounded bg-light-primary text-light-on-primary font-label text-label-lg">Send Family Invite</button>
+      </div>
+    </div>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+  <script>
+    function checkIn(type) {
+      const el = document.getElementById('checkin-status');
+      if (type === 'safe') {
+        el.className = 'font-label text-label-md text-light-success';
+        el.textContent = 'Marked Safe at 14:32 IST • Shared with 3 family members.';
+      } else {
+        el.className = 'font-label text-label-md text-light-error';
+        el.textContent = 'Help Request sent with live GPS to Sharma Family Group!';
+      }
+    }
+  </script>
+
+
+</body></html>
+
+<!-- Emergency Contacts -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Contacts — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-sm">
+      <div class="flex items-center gap-gutter-sm">
+        <a href="../home-dashboard/HomeDashboard.html" aria-label="Back to Home" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+          <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+        </a>
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Emergency Contacts</h1>
+          <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-success">Cached for Offline Calling</p>
+        </div>
+      </div>
+      <button type="button" onclick="document.getElementById(&#39;add-contact-modal&#39;).classList.remove(&#39;hidden&#39;)" class="min-h-[36px] px-gutter-md py-gutter-xs rounded bg-light-primary text-light-on-primary font-label text-label-md">+ Add</button>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- Official 112 National Helpline -->
+      <a href="tel:112" class="bg-light-error text-light-on-error rounded-md p-gutter-lg shadow-sm flex items-center justify-between gap-gutter-md hover:opacity-95">
+        <div class="flex items-center gap-gutter-md">
+          <span class="w-12 h-12 rounded-full bg-light-on-error/20 inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[28px]" aria-hidden="true">call</span>
+          </span>
+          <div>
+            <span data-design-text-token="headline-md" class="font-headline text-headline-md block tabular-nums">112 — National ERSS</span>
+            <span data-design-text-token="body-md" class="font-body text-body-md block">Police, Fire, Ambulance &amp; Disaster Rescue</span>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_forward</span>
+      </a>
+
+      <!-- Official Services Grid -->
+      <section class="flex flex-col gap-gutter-sm">
+        <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Official Helplines</h2>
+        <div class="grid grid-cols-2 gap-gutter-sm">
+          <a href="tel:100" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+            <div>
+              <span data-design-text-token="title-md" class="font-title text-title-md text-light-primary block tabular-nums">100</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Police Control</span>
+            </div>
+            <span class="material-symbols-outlined text-light-primary" aria-hidden="true">call</span>
+          </a>
+
+          <a href="tel:101" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+            <div>
+              <span data-design-text-token="title-md" class="font-title text-title-md text-light-error block tabular-nums">101</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Fire Service</span>
+            </div>
+            <span class="material-symbols-outlined text-light-error" aria-hidden="true">call</span>
+          </a>
+
+          <a href="tel:108" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+            <div>
+              <span data-design-text-token="title-md" class="font-title text-title-md text-light-secondary block tabular-nums">108</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Ambulance</span>
+            </div>
+            <span class="material-symbols-outlined text-light-secondary" aria-hidden="true">call</span>
+          </a>
+
+          <a href="tel:1070" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+            <div>
+              <span data-design-text-token="title-md" class="font-title text-title-md text-light-primary block tabular-nums">1070</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Disaster Cell</span>
+            </div>
+            <span class="material-symbols-outlined text-light-primary" aria-hidden="true">call</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Personal Emergency Contacts -->
+      <section class="flex flex-col gap-gutter-sm">
+        <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Personal Emergency Contacts</h2>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md">
+          <div class="min-w-0">
+            <div class="flex items-center gap-gutter-xs">
+              <span class="px-gutter-xs py-0.5 rounded bg-light-primary-container text-light-primary font-label text-label-sm">#1</span>
+              <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Meera Sharma</h3>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant tabular-nums">Spouse • +91 98204 11111</p>
+          </div>
+          <div class="flex items-center gap-gutter-xs shrink-0">
+            <a href="tel:+919820411111" aria-label="Call Meera" class="w-11 h-11 rounded-full bg-light-success text-light-on-success inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+            </a>
+            <button type="button" onclick="alert(&#39;Emergency SMS sent to Meera&#39;)" aria-label="Message Meera" class="w-11 h-11 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">chat</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md">
+          <div class="min-w-0">
+            <div class="flex items-center gap-gutter-xs">
+              <span class="px-gutter-xs py-0.5 rounded bg-light-surface-container text-light-on-surface font-label text-label-sm">#2</span>
+              <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Dr. Vivek Kulkarni</h3>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant tabular-nums">Family Doctor • +91 98210 77889</p>
+          </div>
+          <div class="flex items-center gap-gutter-xs shrink-0">
+            <a href="tel:+919821077889" aria-label="Call Dr. Vivek" class="w-11 h-11 rounded-full bg-light-success text-light-on-success inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+            </a>
+          </div>
+        </article>
+      </section>
+
+    </main>
+
+    <!-- Add Emergency Contact Modal -->
+    <div id="add-contact-modal" class="hidden fixed inset-0 z-50 bg-light-on-surface/50 flex items-end justify-center p-gutter-lg">
+      <div class="bg-light-surface rounded-lg w-full max-w-[390px] p-gutter-xl flex flex-col gap-gutter-md shadow-xl">
+        <div class="flex items-center justify-between">
+          <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Add Emergency Contact</h2>
+          <button type="button" onclick="document.getElementById(&#39;add-contact-modal&#39;).classList.add(&#39;hidden&#39;)" aria-label="Close" class="w-10 h-10 rounded-full hover:bg-light-surface-container inline-flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Full Name</span>
+          <input type="text" placeholder="e.g., Rajesh Sharma" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Phone Number (+91)</span>
+          <input type="tel" placeholder="98XXX XXXXX" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Relationship</span>
+          <input type="text" placeholder="Father, Neighbor, Doctor..." class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <button type="button" onclick="document.getElementById(&#39;add-contact-modal&#39;).classList.add(&#39;hidden&#39;); alert(&#39;Contact saved offline!&#39;);" class="min-h-[48px] rounded bg-light-primary text-light-on-primary font-label text-label-lg">Save Contact</button>
+      </div>
+    </div>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+
+</body></html>
+
+<!-- Offline Mode -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline Mode — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Offline Status Top Banner -->
+    <div role="status" class="bg-light-warning-container text-light-on-warning-container px-gutter-lg py-gutter-sm flex items-center justify-between gap-gutter-sm">
+      <div class="flex items-center gap-gutter-xs">
+        <span class="material-symbols-outlined text-[18px]" aria-hidden="true">cloud_off</span>
+        <span data-design-text-token="label-md" class="font-label text-label-md">Offline Mode Active</span>
+      </div>
+      <span data-design-text-token="label-sm" class="font-label text-label-sm tabular-nums">Last synced 14:25 IST</span>
+    </div>
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center gap-gutter-sm">
+      <a href="../home-dashboard/HomeDashboard.html" aria-label="Back to Home" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+        <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+      </a>
+      <div>
+        <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Offline Readiness</h1>
+        <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-success">Critical safety data available without internet</p>
+      </div>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- Cached Offline Modules -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant divide-y divide-light-outline-variant">
+        <a href="../disaster-guide-details/DisasterGuideDetails.html" class="min-h-[56px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Downloaded Safety Guides</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">12 Guides (Flood, Quake, First Aid)</p>
+          </div>
+          <span class="material-symbols-outlined text-light-success" aria-hidden="true">offline_pin</span>
+        </a>
+
+        <a href="../emergency-contacts/EmergencyContacts.html" class="min-h-[56px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">112 &amp; Personal Contacts</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">One-tap cellular dial &amp; SMS SOS</p>
+          </div>
+          <span class="material-symbols-outlined text-light-success" aria-hidden="true">offline_pin</span>
+        </a>
+
+        <a href="../evacuation-planner/EvacuationPlanner.html" class="min-h-[56px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Saved Evacuation Plan &amp; Shelters</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Dadar West route &amp; 4 nearby camps</p>
+          </div>
+          <span class="material-symbols-outlined text-light-success" aria-hidden="true">offline_pin</span>
+        </a>
+
+        <a href="../emergency-kit-checklist/EmergencyKitChecklist.html" class="min-h-[56px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Emergency Kit Checklist</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Local progress saved on device</p>
+          </div>
+          <span class="material-symbols-outlined text-light-success" aria-hidden="true">offline_pin</span>
+        </a>
+      </section>
+
+      <!-- Pending Sync Queue -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+        <div class="flex items-center justify-between">
+          <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Pending Sync Queue</h2>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-warning">1 Report Queued</span>
+        </div>
+        <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Incident report #INC-MH-4092 will upload automatically when mobile data returns.</p>
+        <button type="button" onclick="alert(&#39;Checking network... Still offline. Data remains safely queued.&#39;)" class="min-h-[44px] px-gutter-md py-gutter-sm rounded bg-light-primary text-light-on-primary font-label text-label-lg">Retry Sync Now</button>
+      </section>
+
+    </main>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+
+</body></html>
+
+<!-- Live Disaster Alerts (Desktop) -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Disaster Alerts (Desktop) — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[1024px] flex flex-col lg:flex-row bg-light-background" data-stitch-vh="min-h-[1024px]===min-h-screen">
+
+    <!-- Persistent Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 shrink-0 bg-light-primary text-light-on-primary min-h-[1024px] flex-col justify-between p-gutter-lg" data-stitch-vh="min-h-[1024px]===min-h-screen">
+      <div class="flex flex-col gap-gutter-xl">
+        <div class="flex items-center gap-gutter-md">
+          <span class="w-10 h-10 rounded-md bg-light-secondary text-light-on-secondary inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: &#39;FILL&#39; 1;" aria-hidden="true">shield_with_heart</span>
+          </span>
+          <div>
+            <span data-design-text-token="title-md" class="font-title text-title-md block leading-tight">Citizen Hub</span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-primary-container block">Disaster Preparedness</span>
+          </div>
+        </div>
+
+        <nav aria-label="Desktop Navigation" class="flex flex-col gap-gutter-xs">
+          <a href="../home-dashboard-desktop/HomeDashboardDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">dashboard</span>
+            <span data-design-text-token="label-lg">Home Dashboard</span>
+          </a>
+          <a href="LiveDisasterAlertsDesktop.html" aria-current="page" class="min-h-[44px] px-gutter-md py-gutter-sm rounded bg-light-on-primary/15 text-light-on-primary flex items-center justify-between font-label text-label-lg">
+            <span class="flex items-center gap-gutter-md">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">notifications_active</span>
+              <span data-design-text-token="label-lg">Live Alerts</span>
+            </span>
+            <span class="px-gutter-sm py-0.5 rounded-full bg-light-error text-light-on-error text-label-sm tabular-nums">3</span>
+          </a>
+          <a href="../safe-shelter-map-desktop/SafeShelterMapDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">map</span>
+            <span data-design-text-token="label-lg">Shelters &amp; Map</span>
+          </a>
+          <a href="../emergency-sos/EmergencySOS.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">sos</span>
+            <span data-design-text-token="label-lg">Emergency SOS</span>
+          </a>
+          <a href="../safety-learning-center/SafetyLearningCenter.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">menu_book</span>
+            <span data-design-text-token="label-lg">Safety Guides</span>
+          </a>
+          <a href="../emergency-kit-desktop/EmergencyKitDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">checklist</span>
+            <span data-design-text-token="label-lg">Kit &amp; Checklist</span>
+          </a>
+          <a href="../family-safety/FamilySafety.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">family_restroom</span>
+            <span data-design-text-token="label-lg">Family Safety</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-gutter-md rounded bg-light-on-primary/10 flex flex-col gap-gutter-xs">
+        <div class="flex items-center gap-gutter-xs">
+          <span class="w-2 h-2 rounded-full bg-success-green"></span>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm">Offline Pack Synced</span>
+        </div>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-primary-container">Guides &amp; 112 ready offline</span>
+      </div>
+    </aside>
+
+    <!-- Main Desktop Workspace -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <header class="min-h-16 bg-light-surface border-b border-light-outline-variant px-gutter-lg lg:px-gutter-xl py-gutter-sm flex flex-wrap items-center justify-between gap-gutter-md">
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Live Disaster Alerts</h1>
+          <p data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface-variant">Mumbai &amp; Konkan Region • Verified NDMA / IMD / BMC Feed</p>
+        </div>
+        <div class="flex items-center gap-gutter-md">
+          <a href="../emergency-sos/EmergencySOS.html" class="min-h-[44px] px-gutter-lg py-gutter-sm rounded bg-light-error text-light-on-error font-label text-label-lg inline-flex items-center gap-gutter-xs shadow-sm">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">sos</span>
+            <span data-design-text-token="label-lg">Emergency SOS (112)</span>
+          </a>
+          <img src="https://lh3.googleusercontent.com/aida/ALJJyrDLg40tbrO5J_V_36H-J-G4aOBDioFjMF4XTfQoOFmrZ3Ft4hBlGwgR0dcC9E27sC8mmNhnBQufUOef0NS73T3rx9RL_wQLs5pKjid10GNQQB07GDk2eXAZUxW9iZkewfxwyWVf8b7TUS3COlthfU4lOyc_XDdKyhctdeVKa3CdyTzlnKD7bTNCqyXdnMhvcpeZquaE--fJZJl8JEwC1pxnoMLCupW5tYchvMIPjkfPneLixFVN3XBWBw" alt="Aarav Sharma" class="w-10 h-10 rounded-full object-cover border border-light-outline-variant">
+        </div>
+      </header>
+
+      <main class="flex-1 p-gutter-lg lg:p-gutter-xl grid grid-cols-1 lg:grid-cols-12 gap-gutter-xl items-start">
+
+        <!-- Left 7 Columns: Filterable Alert Feed -->
+        <div class="lg:col-span-7 flex flex-col gap-gutter-md">
+          <div class="flex flex-wrap items-center gap-gutter-sm">
+            <button type="button" class="min-h-[36px] px-gutter-md rounded-full bg-light-primary text-light-on-primary font-label text-label-md">All (3)</button>
+            <button type="button" class="min-h-[36px] px-gutter-md rounded-full bg-light-surface border border-light-outline-variant font-label text-label-md">Critical</button>
+            <button type="button" class="min-h-[36px] px-gutter-md rounded-full bg-light-surface border border-light-outline-variant font-label text-label-md">Flood</button>
+            <button type="button" class="min-h-[36px] px-gutter-md rounded-full bg-light-surface border border-light-outline-variant font-label text-label-md">Weather</button>
+          </div>
+
+          <article onclick="selectDesktopAlert(&#39;Mithi River Crosses Danger Mark&#39;, &#39;Critical • Flood&#39;, &#39;BMC Disaster Cell &amp; Maharashtra SDMA&#39;, &#39;Kurla West, Sion, Chunabhatti (4.2 km)&#39;, &#39;Water level reached 2.9m due to continuous downpour and incoming high tide. Evacuate ground-floor basements and avoid Sion–Kurla underpass.&#39;)" class="cursor-pointer bg-light-surface rounded-md border-2 border-light-error p-gutter-lg shadow-sm flex flex-col gap-gutter-sm">
+            <div class="flex items-center justify-between">
+              <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-error-container text-light-on-error-container font-label text-label-sm">Critical • Flood</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">4.2 km • 18m ago</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Mithi River Crosses Danger Mark</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Water level at 2.9m. Evacuate low-lying basements near Kurla &amp; Sion.</p>
+          </article>
+
+          <article onclick="selectDesktopAlert(&#39;IMD Orange Alert: Very Heavy Rain&#39;, &#39;Warning • Weather&#39;, &#39;India Meteorological Department (IMD)&#39;, &#39;Mumbai City &amp; Suburban&#39;, &#39;115–204 mm rainfall forecast over the next 12 hours with gusty winds up to 50 km/h. Stay indoors unless travel is essential.&#39;)" class="cursor-pointer bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-sm hover:bg-light-surface-container-low">
+            <div class="flex items-center justify-between">
+              <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-warning-container text-light-on-warning-container font-label text-label-sm">Warning • Heavy Rain</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">Your Area • 45m ago</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">IMD Orange Alert: Very Heavy Rain</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">115–204 mm rainfall forecast over next 12 hours. Gusty winds 50 km/h.</p>
+          </article>
+
+          <article onclick="selectDesktopAlert(&#39;INCOIS High Wave Advisory&#39;, &#39;Advisory • Coastal&#39;, &#39;INCOIS &amp; Coast Guard&#39;, &#39;Dadar Chowpatty, Worli Sea Face (1.8 km)&#39;, &#39;High waves of 3.2m–3.8m forecast along Konkan coast. Avoid seafront promenades during high tide at 17:40 IST.&#39;)" class="cursor-pointer bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-sm hover:bg-light-surface-container-low">
+            <div class="flex items-center justify-between">
+              <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-warning-container/60 text-light-on-warning-container font-label text-label-sm">Advisory • High Swell</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">1.8 km • 2h ago</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">INCOIS High Wave Advisory</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">3.2m–3.8m waves along Konkan coast. Fishermen advised not to venture out.</p>
+          </article>
+        </div>
+
+        <!-- Right 5 Columns: Persistent Alert Detail Panel -->
+        <aside class="lg:col-span-5 bg-light-surface rounded-md border border-light-outline-variant p-gutter-xl shadow-sm flex flex-col gap-gutter-md">
+          <div>
+            <span id="d-badge" class="px-gutter-sm py-gutter-xs rounded-full bg-light-error-container text-light-on-error-container font-label text-label-sm">Critical • Flood</span>
+            <h2 id="d-title" data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface mt-gutter-sm">Mithi River Crosses Danger Mark</h2>
+          </div>
+
+          <div class="p-gutter-md rounded bg-light-surface-container-low flex flex-col gap-gutter-xs">
+            <p data-design-text-token="label-md" class="font-label text-label-md">Source: <span id="d-source" class="font-normal">BMC Disaster Cell &amp; Maharashtra SDMA</span></p>
+            <p data-design-text-token="label-md" class="font-label text-label-md">Affected: <span id="d-area" class="font-normal">Kurla West, Sion, Chunabhatti (4.2 km)</span></p>
+          </div>
+
+          <p id="d-body" data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface">
+            Water level reached 2.9m due to continuous downpour and incoming high tide. Evacuate ground-floor basements and avoid Sion–Kurla underpass.
+          </p>
+
+          <div class="grid grid-cols-2 gap-gutter-sm">
+            <div class="p-gutter-md rounded bg-light-success-container/60">
+              <h3 data-design-text-token="label-md" class="font-label text-label-md text-light-on-success-container mb-gutter-xs">Do&#39;s</h3>
+              <ul class="text-body-md text-light-on-success-container list-disc pl-4 flex flex-col gap-gutter-xs">
+                <li>Move to higher ground</li>
+                <li>Keep 112 &amp; torch handy</li>
+              </ul>
+            </div>
+            <div class="p-gutter-md rounded bg-light-error-container/60">
+              <h3 data-design-text-token="label-md" class="font-label text-label-md text-light-on-error-container mb-gutter-xs">Don&#39;ts</h3>
+              <ul class="text-body-md text-light-on-error-container list-disc pl-4 flex flex-col gap-gutter-xs">
+                <li>Don&#39;t walk in floodwater</li>
+                <li>Don&#39;t touch fallen wires</li>
+              </ul>
+            </div>
+          </div>
+
+          <a href="../safe-shelter-map-desktop/SafeShelterMapDesktop.html" class="min-h-[44px] px-gutter-lg py-gutter-sm rounded bg-light-primary text-light-on-primary font-label text-label-lg inline-flex items-center justify-center">View Evacuation Shelters</a>
+        </aside>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function selectDesktopAlert(title, badge, source, area, body) {
+      document.getElementById('d-title').textContent = title;
+      document.getElementById('d-badge').textContent = badge;
+      document.getElementById('d-source').textContent = source;
+      document.getElementById('d-area').textContent = area;
+      document.getElementById('d-body').textContent = body;
+    }
+  </script>
+
+
+</body></html>
+
+<!-- Volunteer & Community Assistance -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer &amp; Community Assistance — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-sm">
+      <div class="flex items-center gap-gutter-sm">
+        <a href="../home-dashboard/HomeDashboard.html" aria-label="Back to Home" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+          <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+        </a>
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Community Relief</h1>
+          <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant">Volunteers &amp; Aid Requests</p>
+        </div>
+      </div>
+      <button type="button" onclick="document.getElementById(&#39;vol-modal&#39;).classList.remove(&#39;hidden&#39;)" class="min-h-[36px] px-gutter-md py-gutter-xs rounded bg-light-secondary text-light-on-secondary font-label text-label-md">Join as Volunteer</button>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- Tabs: Requests / Volunteers -->
+      <div class="grid grid-cols-2 gap-gutter-xs bg-light-surface-container p-gutter-xs rounded-md" role="tablist">
+        <button type="button" id="tab-req" onclick="setVolTab(&#39;req&#39;)" class="min-h-[40px] rounded bg-light-surface text-light-primary font-label text-label-md shadow-sm">Nearby Requests (3)</button>
+        <button type="button" id="tab-vol" onclick="setVolTab(&#39;vol&#39;)" class="min-h-[40px] rounded text-light-on-surface-variant font-label text-label-md">Volunteers (14)</button>
+      </div>
+
+      <!-- REQUESTS TAB -->
+      <section id="panel-req" class="flex flex-col gap-gutter-md">
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-sm">
+          <div class="flex items-center justify-between">
+            <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-error-container text-light-on-error-container font-label text-label-sm">High Priority • Food &amp; Water</span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">1.4 km away</span>
+          </div>
+          <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">200 Dry Meal Packets Needed</h2>
+          <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">BMC Dadar Relief Shelter • Requested by Ward Officer</p>
+          <button type="button" onclick="this.textContent=&#39;Accepted — Coordinator Notified ✓&#39;" class="min-h-[44px] px-gutter-md py-gutter-sm rounded bg-light-primary text-light-on-primary font-label text-label-lg">Offer Assistance</button>
+        </article>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-sm">
+          <div class="flex items-center justify-between">
+            <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-warning-container text-light-on-warning-container font-label text-label-sm">Urgent • Blood Donation</span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">2.1 km away</span>
+          </div>
+          <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">O-Negative Blood Donors Needed</h2>
+          <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">KEM Hospital Blood Bank, Parel • Verified Request</p>
+          <a href="tel:+912224136051" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-light-primary font-label text-label-lg inline-flex items-center justify-center">Call Blood Bank</a>
+        </article>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex flex-col gap-gutter-sm">
+          <div class="flex items-center justify-between">
+            <span class="px-gutter-sm py-gutter-xs rounded-full bg-light-secondary-container text-light-on-secondary-container font-label text-label-sm">Shelter Support</span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">3.0 km away</span>
+          </div>
+          <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">First-Aid &amp; Elder Care Volunteers</h2>
+          <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Matunga Community Hall Relief Camp</p>
+          <button type="button" onclick="this.textContent=&#39;Accepted — Shift Confirmed ✓&#39;" class="min-h-[44px] px-gutter-md py-gutter-sm rounded bg-light-primary text-light-on-primary font-label text-label-lg">Sign Up for Shift</button>
+        </article>
+      </section>
+
+      <!-- VOLUNTEERS TAB -->
+      <section id="panel-vol" class="hidden flex flex-col gap-gutter-sm">
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md">
+          <div>
+            <div class="flex items-center gap-gutter-xs">
+              <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Dr. Priya Deshmukh</h3>
+              <span class="px-gutter-xs py-0.5 rounded-full bg-light-success-container text-light-on-success-container font-label text-label-sm">Verified</span>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">First Aid &amp; Medical • Dadar • Available Now</p>
+          </div>
+          <a href="tel:+919820455555" aria-label="Call Volunteer" class="w-10 h-10 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+          </a>
+        </article>
+
+        <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md">
+          <div>
+            <div class="flex items-center gap-gutter-xs">
+              <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Rohan Patil</h3>
+              <span class="px-gutter-xs py-0.5 rounded-full bg-light-success-container text-light-on-success-container font-label text-label-sm">Verified</span>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Flood Rescue &amp; Logistics • Matunga</p>
+          </div>
+          <a href="tel:+919820466666" aria-label="Call Volunteer" class="w-10 h-10 rounded-full bg-light-surface-container-low text-light-primary inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span>
+          </a>
+        </article>
+      </section>
+
+    </main>
+
+    <!-- Volunteer Registration Modal -->
+    <div id="vol-modal" class="hidden fixed inset-0 z-50 bg-light-on-surface/50 flex items-end justify-center p-gutter-lg">
+      <div class="bg-light-surface rounded-lg w-full max-w-[390px] p-gutter-xl flex flex-col gap-gutter-md shadow-xl">
+        <div class="flex items-center justify-between">
+          <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Volunteer Registration</h2>
+          <button type="button" onclick="document.getElementById(&#39;vol-modal&#39;).classList.add(&#39;hidden&#39;)" aria-label="Close" class="w-10 h-10 rounded-full hover:bg-light-surface-container inline-flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Primary Skill</span>
+          <select class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+            <option>First Aid / Medical</option>
+            <option>Food &amp; Relief Distribution</option>
+            <option>Flood Rescue / Swimming</option>
+            <option>Shelter Management</option>
+          </select>
+        </label>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Ward / Service Area</span>
+          <input type="text" value="Dadar West &amp; Matunga" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <button type="button" onclick="document.getElementById(&#39;vol-modal&#39;).classList.add(&#39;hidden&#39;); alert(&#39;Volunteer application submitted for civic verification!&#39;);" class="min-h-[48px] rounded bg-light-secondary text-light-on-secondary font-label text-label-lg">Register as Volunteer</button>
+      </div>
+    </div>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+  <script>
+    function setVolTab(t) {
+      const isReq = t === 'req';
+      document.getElementById('panel-req').classList.toggle('hidden', !isReq);
+      document.getElementById('panel-vol').classList.toggle('hidden', isReq);
+      document.getElementById('tab-req').className = isReq
+        ? 'min-h-[40px] rounded bg-light-surface text-light-primary font-label text-label-md shadow-sm'
+        : 'min-h-[40px] rounded text-light-on-surface-variant font-label text-label-md';
+      document.getElementById('tab-vol').className = !isReq
+        ? 'min-h-[40px] rounded bg-light-surface text-light-primary font-label text-label-md shadow-sm'
+        : 'min-h-[40px] rounded text-light-on-surface-variant font-label text-label-md';
+    }
+  </script>
+
+
+</body></html>
+
+<!-- Safe Shelter & Emergency Map (Desktop) -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe Shelter &amp; Emergency Map (Desktop) — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[1024px] flex flex-col lg:flex-row bg-light-background" data-stitch-vh="min-h-[1024px]===min-h-screen">
+
+    <!-- Persistent Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 shrink-0 bg-light-primary text-light-on-primary min-h-[1024px] flex-col justify-between p-gutter-lg" data-stitch-vh="min-h-[1024px]===min-h-screen">
+      <div class="flex flex-col gap-gutter-xl">
+        <div class="flex items-center gap-gutter-md">
+          <span class="w-10 h-10 rounded-md bg-light-secondary text-light-on-secondary inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: &#39;FILL&#39; 1;" aria-hidden="true">shield_with_heart</span>
+          </span>
+          <div>
+            <span data-design-text-token="title-md" class="font-title text-title-md block leading-tight">Citizen Hub</span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-primary-container block">Disaster Preparedness</span>
+          </div>
+        </div>
+
+        <nav aria-label="Desktop Navigation" class="flex flex-col gap-gutter-xs">
+          <a href="../home-dashboard-desktop/HomeDashboardDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">dashboard</span>
+            <span data-design-text-token="label-lg">Home Dashboard</span>
+          </a>
+          <a href="../live-disaster-alerts-desktop/LiveDisasterAlertsDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center justify-between font-label text-label-lg">
+            <span class="flex items-center gap-gutter-md">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">notifications_active</span>
+              <span data-design-text-token="label-lg">Live Alerts</span>
+            </span>
+            <span class="px-gutter-sm py-0.5 rounded-full bg-light-error text-light-on-error text-label-sm tabular-nums">3</span>
+          </a>
+          <a href="SafeShelterMapDesktop.html" aria-current="page" class="min-h-[44px] px-gutter-md py-gutter-sm rounded bg-light-on-primary/15 text-light-on-primary flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">map</span>
+            <span data-design-text-token="label-lg">Shelters &amp; Map</span>
+          </a>
+          <a href="../emergency-sos/EmergencySOS.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">sos</span>
+            <span data-design-text-token="label-lg">Emergency SOS</span>
+          </a>
+          <a href="../safety-learning-center/SafetyLearningCenter.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">menu_book</span>
+            <span data-design-text-token="label-lg">Safety Guides</span>
+          </a>
+          <a href="../emergency-kit-desktop/EmergencyKitDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">checklist</span>
+            <span data-design-text-token="label-lg">Kit &amp; Checklist</span>
+          </a>
+          <a href="../family-safety/FamilySafety.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">family_restroom</span>
+            <span data-design-text-token="label-lg">Family Safety</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-gutter-md rounded bg-light-on-primary/10 flex flex-col gap-gutter-xs">
+        <div class="flex items-center gap-gutter-xs">
+          <span class="w-2 h-2 rounded-full bg-success-green"></span>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm">Offline Pack Synced</span>
+        </div>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-primary-container">Guides &amp; 112 ready offline</span>
+      </div>
+    </aside>
+
+    <!-- Main Desktop Workspace -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <header class="min-h-16 bg-light-surface border-b border-light-outline-variant px-gutter-lg lg:px-gutter-xl py-gutter-sm flex flex-wrap items-center justify-between gap-gutter-md">
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Safe Shelter &amp; Emergency Map</h1>
+          <p data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface-variant">Dadar West, Mumbai • 5 km Evacuation Radius</p>
+        </div>
+        <div class="flex items-center gap-gutter-md">
+          <a href="../evacuation-planner/EvacuationPlanner.html" class="min-h-[44px] px-gutter-lg py-gutter-sm rounded border border-light-outline-variant text-light-primary font-label text-label-lg inline-flex items-center">Evacuation Planner</a>
+          <a href="../emergency-sos/EmergencySOS.html" class="min-h-[44px] px-gutter-lg py-gutter-sm rounded bg-light-error text-light-on-error font-label text-label-lg inline-flex items-center gap-gutter-xs shadow-sm">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">sos</span>
+            <span data-design-text-token="label-lg">Emergency SOS (112)</span>
+          </a>
+        </div>
+      </header>
+
+      <main class="flex-1 p-gutter-lg lg:p-gutter-xl grid grid-cols-1 lg:grid-cols-12 gap-gutter-xl items-start">
+
+        <!-- Left 4 Columns: Search & Shelter List -->
+        <div class="lg:col-span-4 flex flex-col gap-gutter-md">
+          <div class="relative flex items-center">
+            <span aria-hidden="true" class="material-symbols-outlined text-[20px] text-light-outline absolute left-3 pointer-events-none">search</span>
+            <input type="search" placeholder="Search shelters, hospitals..." class="min-h-[44px] w-full pl-10 pr-gutter-md py-gutter-sm rounded border border-light-outline-variant bg-light-surface text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+          </div>
+
+          <article class="bg-light-surface rounded-md border-2 border-light-success p-gutter-md shadow-sm flex flex-col gap-gutter-xs">
+            <div class="flex items-center justify-between">
+              <span class="px-gutter-sm py-0.5 rounded-full bg-light-success-container text-light-on-success-container font-label text-label-sm">180 / 300 beds</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm tabular-nums">1.4 km • 6 min</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md">BMC Dadar Relief Shelter</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Water, generator, medical desk, wheelchair ramp</p>
+          </article>
+
+          <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md shadow-sm flex flex-col gap-gutter-xs">
+            <div class="flex items-center justify-between">
+              <span class="px-gutter-sm py-0.5 rounded-full bg-light-primary-container text-light-on-primary-container font-label text-label-sm">Hospital • 24/7</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm tabular-nums">2.1 km • 9 min</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md">KEM Hospital Trauma Center</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Trauma ICU, ambulance bay, blood bank</p>
+          </article>
+
+          <article class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md shadow-sm flex flex-col gap-gutter-xs">
+            <div class="flex items-center justify-between">
+              <span class="px-gutter-sm py-0.5 rounded-full bg-light-error-container text-light-on-error-container font-label text-label-sm">Fire &amp; Rescue</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm tabular-nums">1.8 km • 7 min</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md">Dadar Fire &amp; Rescue Station</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">2 inflatable rescue boats ready</p>
+          </article>
+        </div>
+
+        <!-- Right 8 Columns: Interactive Map Canvas -->
+        <section class="lg:col-span-8 bg-light-surface rounded-md border border-light-outline-variant overflow-hidden shadow-sm">
+          <div class="relative h-[560px] bg-light-surface-container">
+            <svg viewBox="0 0 800 560" class="w-full h-full" aria-hidden="true">
+              <rect width="800" height="560" fill="#E8EEF5"></rect>
+              <path d="M0 0 L140 0 L110 280 L150 560 L0 560 Z" fill="#CFE4F7"></path>
+              <path d="M135 100 L800 85" stroke="#FFFFFF" stroke-width="12"></path>
+              <path d="M115 280 L800 300" stroke="#FFFFFF" stroke-width="14"></path>
+              <path d="M360 0 L385 560" stroke="#FFFFFF" stroke-width="12"></path>
+              <path d="M580 0 L560 560" stroke="#FFFFFF" stroke-width="10"></path>
+              <path d="M372 288 L372 180 L570 180" stroke="#006E2D" stroke-width="5" stroke-dasharray="10 6" fill="none"></path>
+              <ellipse cx="640" cy="400" rx="90" ry="60" fill="#F59E0B" fill-opacity="0.22" stroke="#F59E0B" stroke-width="2" stroke-dasharray="6 4"></ellipse>
+            </svg>
+
+            <!-- Legend -->
+            <div class="absolute top-4 left-4 bg-light-surface/95 rounded border border-light-outline-variant p-gutter-md flex flex-wrap gap-gutter-md shadow-sm">
+              <span class="flex items-center gap-gutter-xs font-label text-label-sm"><span class="w-3 h-3 rounded-full bg-light-success"></span>Shelters</span>
+              <span class="flex items-center gap-gutter-xs font-label text-label-sm"><span class="w-3 h-3 rounded-full bg-light-primary"></span>Hospitals</span>
+              <span class="flex items-center gap-gutter-xs font-label text-label-sm"><span class="w-3 h-3 rounded-full bg-light-error"></span>Emergency</span>
+              <span class="flex items-center gap-gutter-xs font-label text-label-sm"><span class="w-3 h-3 rounded-full bg-warning-orange"></span>Flood Risk Zone</span>
+            </div>
+
+            <!-- Pins -->
+            <div class="absolute top-72 left-72 flex flex-col items-center">
+              <span class="w-6 h-6 rounded-full bg-light-primary border-2 border-light-surface shadow-md"></span>
+              <span class="font-label text-label-sm bg-light-primary text-light-on-primary px-gutter-xs rounded mt-1">You (Dadar West)</span>
+            </div>
+
+            <div class="absolute top-40 left-96 w-11 h-11 rounded-full bg-light-success text-light-on-success shadow-md border-2 border-light-surface inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[22px]" aria-hidden="true">night_shelter</span>
+            </div>
+
+            <div class="absolute top-24 left-48 w-11 h-11 rounded-full bg-light-error text-light-on-error shadow-md border-2 border-light-surface inline-flex items-center justify-center">
+              <span class="material-symbols-outlined text-[22px]" aria-hidden="true">local_fire_department</span>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+
+</body></html>
+
+<!-- Emergency Kit & Preparedness (Desktop) -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Kit &amp; Preparedness (Desktop) — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[1024px] flex flex-col lg:flex-row bg-light-background" data-stitch-vh="min-h-[1024px]===min-h-screen">
+
+    <!-- Persistent Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 shrink-0 bg-light-primary text-light-on-primary min-h-[1024px] flex-col justify-between p-gutter-lg" data-stitch-vh="min-h-[1024px]===min-h-screen">
+      <div class="flex flex-col gap-gutter-xl">
+        <div class="flex items-center gap-gutter-md">
+          <span class="w-10 h-10 rounded-md bg-light-secondary text-light-on-secondary inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: &#39;FILL&#39; 1;" aria-hidden="true">shield_with_heart</span>
+          </span>
+          <div>
+            <span data-design-text-token="title-md" class="font-title text-title-md block leading-tight">Citizen Hub</span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-primary-container block">Disaster Preparedness</span>
+          </div>
+        </div>
+
+        <nav aria-label="Desktop Navigation" class="flex flex-col gap-gutter-xs">
+          <a href="../home-dashboard-desktop/HomeDashboardDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">dashboard</span>
+            <span data-design-text-token="label-lg">Home Dashboard</span>
+          </a>
+          <a href="../live-disaster-alerts-desktop/LiveDisasterAlertsDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center justify-between font-label text-label-lg">
+            <span class="flex items-center gap-gutter-md">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">notifications_active</span>
+              <span data-design-text-token="label-lg">Live Alerts</span>
+            </span>
+            <span class="px-gutter-sm py-0.5 rounded-full bg-light-error text-light-on-error text-label-sm tabular-nums">3</span>
+          </a>
+          <a href="../safe-shelter-map-desktop/SafeShelterMapDesktop.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">map</span>
+            <span data-design-text-token="label-lg">Shelters &amp; Map</span>
+          </a>
+          <a href="../emergency-sos/EmergencySOS.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">sos</span>
+            <span data-design-text-token="label-lg">Emergency SOS</span>
+          </a>
+          <a href="../safety-learning-center/SafetyLearningCenter.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">menu_book</span>
+            <span data-design-text-token="label-lg">Safety Guides</span>
+          </a>
+          <a href="EmergencyKitDesktop.html" aria-current="page" class="min-h-[44px] px-gutter-md py-gutter-sm rounded bg-light-on-primary/15 text-light-on-primary flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">checklist</span>
+            <span data-design-text-token="label-lg">Kit &amp; Checklist</span>
+          </a>
+          <a href="../family-safety/FamilySafety.html" class="min-h-[44px] px-gutter-md py-gutter-sm rounded text-light-primary-container hover:bg-light-on-primary/10 flex items-center gap-gutter-md font-label text-label-lg">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">family_restroom</span>
+            <span data-design-text-token="label-lg">Family Safety</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-gutter-md rounded bg-light-on-primary/10 flex flex-col gap-gutter-xs">
+        <div class="flex items-center gap-gutter-xs">
+          <span class="w-2 h-2 rounded-full bg-success-green"></span>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm">Offline Pack Synced</span>
+        </div>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-primary-container">Guides &amp; 112 ready offline</span>
+      </div>
+    </aside>
+
+    <!-- Main Desktop Workspace -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <header class="min-h-16 bg-light-surface border-b border-light-outline-variant px-gutter-lg lg:px-gutter-xl py-gutter-sm flex flex-wrap items-center justify-between gap-gutter-md">
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Emergency Kit &amp; Preparedness</h1>
+          <p data-design-text-token="label-md" class="font-label text-label-md text-light-on-surface-variant">72-Hour Family Readiness Checklist</p>
+        </div>
+        <div class="flex items-center gap-gutter-md">
+          <button type="button" onclick="alert(&#39;Checklist saved offline!&#39;)" class="min-h-[44px] px-gutter-lg py-gutter-sm rounded bg-light-primary text-light-on-primary font-label text-label-lg">Save Progress</button>
+          <a href="../emergency-sos/EmergencySOS.html" class="min-h-[44px] px-gutter-lg py-gutter-sm rounded bg-light-error text-light-on-error font-label text-label-lg inline-flex items-center gap-gutter-xs">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">sos</span>
+            <span data-design-text-token="label-lg">Emergency SOS (112)</span>
+          </a>
+        </div>
+      </header>
+
+      <main class="flex-1 p-gutter-lg lg:p-gutter-xl flex flex-col gap-gutter-xl">
+
+        <!-- Score Banner -->
+        <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-xl shadow-sm flex flex-wrap items-center justify-between gap-gutter-lg">
+          <div class="flex items-center gap-gutter-lg">
+            <div class="relative w-20 h-20 flex items-center justify-center shrink-0">
+              <svg class="w-20 h-20 -rotate-90" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="34" stroke="currentColor" stroke-width="7" fill="none" class="text-light-surface-container-high"></circle>
+                <circle id="d-ring" cx="40" cy="40" r="34" stroke="currentColor" stroke-width="7" fill="none" stroke-dasharray="213.6" stroke-dashoffset="53.4" stroke-linecap="round" class="text-light-secondary"></circle>
+              </svg>
+              <span id="d-pct" data-design-text-token="title-md" class="font-title text-title-md text-light-primary tabular-nums absolute">75%</span>
+            </div>
+            <div>
+              <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Family Preparedness Score</h2>
+              <p id="d-sub" data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">9 of 12 essential items ready across 6 categories.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3-Column Category Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-lg">
+          <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+            <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Water &amp; Food</h3>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Drinking water (3L/person/day)</span></label>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Ready-to-eat dry food</span></label>
+          </section>
+
+          <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+            <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Medical</h3>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">First aid kit &amp; antiseptic</span></label>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">ORS &amp; 7-day medicines</span></label>
+          </section>
+
+          <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+            <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Electronics</h3>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Flashlight &amp; power bank</span></label>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Spare AA batteries &amp; FM radio</span></label>
+          </section>
+
+          <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+            <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Documents</h3>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Aadhaar, PAN &amp; insurance</span></label>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Emergency contacts &amp; cash</span></label>
+          </section>
+
+          <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+            <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Safety Gear</h3>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Whistle, N95 masks &amp; sanitizer</span></label>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Extra clothes &amp; multi-tool</span></label>
+          </section>
+
+          <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+            <h3 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Family Plan</h3>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" checked onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Meeting point agreed</span></label>
+            <label class="flex items-center gap-gutter-sm min-h-[40px] cursor-pointer"><input type="checkbox" onchange="calcDesktop()" class="d-cb w-4 h-4 rounded text-light-secondary"><span class="text-body-md">Evacuation route practiced</span></label>
+          </section>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function calcDesktop() {
+      const cbs = document.querySelectorAll('.d-cb');
+      const checked = Array.from(cbs).filter(c => c.checked).length;
+      const pct = Math.round((checked / cbs.length) * 100);
+      document.getElementById('d-pct').textContent = pct + '%';
+      document.getElementById('d-sub').textContent = `${checked} of ${cbs.length} essential items ready across 6 categories.`;
+      document.getElementById('d-ring').setAttribute('stroke-dashoffset', (213.6 - 213.6 * pct / 100).toFixed(1));
+    }
+  </script>
+
+
+</body></html>
+
+<!-- Notifications Center -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications Center — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-sm">
+      <div class="flex items-center gap-gutter-sm">
+        <a href="../home-dashboard/HomeDashboard.html" aria-label="Back to Home" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+          <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+        </a>
+        <div>
+          <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Notifications</h1>
+          <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant">3 Unread Updates</p>
+        </div>
+      </div>
+      <button type="button" onclick="markAllRead()" class="min-h-[36px] px-gutter-sm font-label text-label-md text-light-primary hover:underline">Mark All Read</button>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- Filters -->
+      <div class="flex items-center gap-gutter-sm overflow-x-auto">
+        <button type="button" onclick="filterNotif(&#39;all&#39;, this)" class="n-chip min-h-[36px] px-gutter-md rounded-full bg-light-primary text-light-on-primary font-label text-label-md shrink-0">All</button>
+        <button type="button" onclick="filterNotif(&#39;emergency&#39;, this)" class="n-chip min-h-[36px] px-gutter-md rounded-full bg-light-surface border border-light-outline-variant font-label text-label-md shrink-0">Emergency</button>
+        <button type="button" onclick="filterNotif(&#39;alerts&#39;, this)" class="n-chip min-h-[36px] px-gutter-md rounded-full bg-light-surface border border-light-outline-variant font-label text-label-md shrink-0">Alerts</button>
+        <button type="button" onclick="filterNotif(&#39;updates&#39;, this)" class="n-chip min-h-[36px] px-gutter-md rounded-full bg-light-surface border border-light-outline-variant font-label text-label-md shrink-0">Updates</button>
+      </div>
+
+      <!-- Notification List -->
+      <div class="flex flex-col gap-gutter-sm">
+        <article data-type="emergency alerts" class="notif-item bg-light-surface rounded-md border-l-4 border border-light-outline-variant p-gutter-md flex items-start gap-gutter-md">
+          <span class="w-10 h-10 rounded-full bg-light-error-container text-light-on-error-container inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">flood</span>
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-gutter-xs">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-error">Critical Alert</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">18m ago</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Mithi River Crosses Danger Mark</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Avoid Sion–Kurla road. Tap for shelter routes.</p>
+          </div>
+        </article>
+
+        <article data-type="updates" class="notif-item bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-start gap-gutter-md">
+          <span class="w-10 h-10 rounded-full bg-light-success-container text-light-on-success-container inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">family_restroom</span>
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-gutter-xs">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-success">Family Check-In</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">12m ago</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">Meera Sharma marked Safe</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Location: Dadar West.</p>
+          </div>
+        </article>
+
+        <article data-type="updates" class="notif-item bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-start gap-gutter-md">
+          <span class="w-10 h-10 rounded-full bg-light-secondary-container text-light-on-secondary-container inline-flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">assignment_turned_in</span>
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-gutter-xs">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-secondary">Report Update</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant tabular-nums">35m ago</span>
+            </div>
+            <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-on-surface">BMC Dewatering Pump Dispatched</h2>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant">Your report #INC-MH-4081 is in progress.</p>
+          </div>
+        </article>
+      </div>
+
+    </main>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+  <script>
+    function filterNotif(t, btn) {
+      document.querySelectorAll('.n-chip').forEach(c => {
+        c.className = 'n-chip min-h-[36px] px-gutter-md rounded-full bg-light-surface border border-light-outline-variant font-label text-label-md shrink-0';
+      });
+      btn.className = 'n-chip min-h-[36px] px-gutter-md rounded-full bg-light-primary text-light-on-primary font-label text-label-md shrink-0';
+      document.querySelectorAll('.notif-item').forEach(item => {
+        item.classList.toggle('hidden', t !== 'all' && !item.dataset.type.includes(t));
+      });
+    }
+    function markAllRead() {
+      document.querySelectorAll('.notif-item').forEach(i => i.classList.add('opacity-75'));
+    }
+  </script>
+
+
+</body></html>
+
+<!-- User Profile -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Shared Mobile Header -->
+    <header class="sticky top-0 z-30 bg-light-primary text-light-on-primary px-gutter-lg py-gutter-md flex items-center justify-between gap-gutter-sm">
+      <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm">Citizen Profile</h1>
+      <a href="../settings-accessibility/SettingsAccessibility.html" aria-label="Settings and Accessibility" class="w-11 h-11 rounded-full bg-light-on-primary/10 hover:bg-light-on-primary/20 inline-flex items-center justify-center">
+        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">settings</span>
+      </a>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- Identity Card -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg shadow-sm flex items-center gap-gutter-md">
+        <img src="https://lh3.googleusercontent.com/aida/ALJJyrDLg40tbrO5J_V_36H-J-G4aOBDioFjMF4XTfQoOFmrZ3Ft4hBlGwgR0dcC9E27sC8mmNhnBQufUOef0NS73T3rx9RL_wQLs5pKjid10GNQQB07GDk2eXAZUxW9iZkewfxwyWVf8b7TUS3COlthfU4lOyc_XDdKyhctdeVKa3CdyTzlnKD7bTNCqyXdnMhvcpeZquaE--fJZJl8JEwC1pxnoMLCupW5tYchvMIPjkfPneLixFVN3XBWBw" alt="Aarav Sharma" class="w-16 h-16 rounded-full object-cover border-2 border-light-primary shrink-0">
+        <div class="flex-1 min-w-0">
+          <h2 id="prof-name" data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Aarav Sharma</h2>
+          <p data-design-text-token="body-md" class="font-body text-body-md text-light-on-surface-variant tabular-nums">+91 98204 51234</p>
+          <p id="prof-loc" data-design-text-token="label-md" class="font-label text-label-md text-light-primary">Mumbai Suburban, Maharashtra</p>
+        </div>
+        <button type="button" onclick="document.getElementById(&#39;edit-prof-modal&#39;).classList.remove(&#39;hidden&#39;)" class="min-h-[36px] px-gutter-md rounded border border-light-outline-variant font-label text-label-md text-light-primary">Edit</button>
+      </section>
+
+      <!-- Quick Stats Row -->
+      <div class="grid grid-cols-3 gap-gutter-sm text-center">
+        <a href="../emergency-kit-checklist/EmergencyKitChecklist.html" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md">
+          <span data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-secondary block tabular-nums">72%</span>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Preparedness</span>
+        </a>
+        <a href="../family-safety/FamilySafety.html" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md">
+          <span data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-primary block tabular-nums">4</span>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Family</span>
+        </a>
+        <a href="../community-incident-reporting/CommunityIncidentReporting.html" class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md">
+          <span data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-primary block tabular-nums">2</span>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant block">Reports</span>
+        </a>
+      </div>
+
+      <!-- Profile Navigation Links -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant divide-y divide-light-outline-variant">
+        <a href="../emergency-contacts/EmergencyContacts.html" class="min-h-[52px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <span class="flex items-center gap-gutter-md">
+            <span class="material-symbols-outlined text-light-primary" aria-hidden="true">contact_phone</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md">Emergency Contacts</span>
+          </span>
+          <span class="material-symbols-outlined text-light-outline" aria-hidden="true">chevron_right</span>
+        </a>
+        <a href="../family-safety/FamilySafety.html" class="min-h-[52px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <span class="flex items-center gap-gutter-md">
+            <span class="material-symbols-outlined text-light-primary" aria-hidden="true">family_restroom</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md">Family Safety &amp; Check-In</span>
+          </span>
+          <span class="material-symbols-outlined text-light-outline" aria-hidden="true">chevron_right</span>
+        </a>
+        <a href="../volunteer-assistance/VolunteerAssistance.html" class="min-h-[52px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <span class="flex items-center gap-gutter-md">
+            <span class="material-symbols-outlined text-light-secondary" aria-hidden="true">volunteer_activism</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md">Volunteer &amp; Relief</span>
+          </span>
+          <span class="material-symbols-outlined text-light-outline" aria-hidden="true">chevron_right</span>
+        </a>
+        <a href="../offline-mode/OfflineMode.html" class="min-h-[52px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <span class="flex items-center gap-gutter-md">
+            <span class="material-symbols-outlined text-light-success" aria-hidden="true">offline_pin</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md">Offline Mode &amp; Downloads</span>
+          </span>
+          <span class="material-symbols-outlined text-light-outline" aria-hidden="true">chevron_right</span>
+        </a>
+        <a href="../settings-accessibility/SettingsAccessibility.html" class="min-h-[52px] px-gutter-lg py-gutter-md flex items-center justify-between hover:bg-light-surface-container-low">
+          <span class="flex items-center gap-gutter-md">
+            <span class="material-symbols-outlined text-light-primary" aria-hidden="true">accessibility_new</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md">Settings &amp; Accessibility</span>
+          </span>
+          <span class="material-symbols-outlined text-light-outline" aria-hidden="true">chevron_right</span>
+        </a>
+      </section>
+
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-prof-modal" class="hidden fixed inset-0 z-50 bg-light-on-surface/50 flex items-end justify-center p-gutter-lg">
+      <div class="bg-light-surface rounded-lg w-full max-w-[390px] p-gutter-xl flex flex-col gap-gutter-md shadow-xl">
+        <div class="flex items-center justify-between">
+          <h2 data-design-text-token="headline-sm" class="font-headline text-headline-sm">Edit Profile</h2>
+          <button type="button" onclick="document.getElementById(&#39;edit-prof-modal&#39;).classList.add(&#39;hidden&#39;)" aria-label="Close" class="w-10 h-10 rounded-full hover:bg-light-surface-container inline-flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">Full Name</span>
+          <input id="ep-name" type="text" value="Aarav Sharma" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <label class="flex flex-col gap-gutter-xs">
+          <span data-design-text-token="label-md" class="font-label text-label-md">District &amp; State</span>
+          <input id="ep-loc" type="text" value="Mumbai Suburban, Maharashtra" class="min-h-[44px] px-gutter-md py-gutter-sm rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+        </label>
+        <button type="button" onclick="saveProfile()" class="min-h-[48px] rounded bg-light-primary text-light-on-primary font-label text-label-lg">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav aria-label="Primary Navigation" class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto z-30 bg-light-surface border-t border-light-outline-variant px-gutter-sm py-gutter-xs grid grid-cols-5">
+      <a href="../home-dashboard/HomeDashboard.html" class="min-h-[48px] flex flex-col items-center justify-center gap-gutter-xs text-light-on-surface-variant hover:text-light-primary">
+        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">home</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm">Home</span>
+      </a>
+      <a href="../live-disaster-alerts/LiveDisasterAlerts.html" class="min-h-[48px] flex flex-col items-center justify-center gap-gutter-xs text-light-on-surface-variant hover:text-light-primary">
+        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">notifications_active</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm">Alerts</span>
+      </a>
+      <a href="../safety-learning-center/SafetyLearningCenter.html" class="min-h-[48px] flex flex-col items-center justify-center gap-gutter-xs text-light-on-surface-variant hover:text-light-primary">
+        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">health_and_safety</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm">Safety</span>
+      </a>
+      <a href="../safe-shelter-map/SafeShelterMap.html" class="min-h-[48px] flex flex-col items-center justify-center gap-gutter-xs text-light-on-surface-variant hover:text-light-primary">
+        <span class="material-symbols-outlined text-[22px]" aria-hidden="true">map</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm">Map</span>
+      </a>
+      <a href="UserProfile.html" aria-current="page" class="min-h-[48px] flex flex-col items-center justify-center gap-gutter-xs text-light-primary">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: &#39;FILL&#39; 1;" aria-hidden="true">person</span>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm">Profile</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    function saveProfile() {
+      document.getElementById('prof-name').textContent = document.getElementById('ep-name').value;
+      document.getElementById('prof-loc').textContent = document.getElementById('ep-loc').value;
+      document.getElementById('edit-prof-modal').classList.add('hidden');
+    }
+  </script>
+
+
+</body></html>
+
+<!-- Settings & Accessibility -->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings &amp; Accessibility — Citizen Disaster Preparedness Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary-navy': '#16324F',
+        'emergency-red': '#D92D20',
+        'safety-teal': '#0F9D9A',
+        'warning-orange': '#F59E0B',
+        'success-green': '#16A34A',
+        'advisory-yellow': '#EAB308',
+        'app-background': '#F4F7FA',
+        'surface-white': '#FFFFFF',
+        'text-primary': '#1F2937',
+        'light-primary': '#16324F',
+        'light-on-primary': '#FFFFFF',
+        'light-primary-container': '#D2E4FF',
+        'light-on-primary-container': '#001D37',
+        'light-secondary': '#006A68',
+        'light-on-secondary': '#FFFFFF',
+        'light-secondary-container': '#D5F7F5',
+        'light-on-secondary-container': '#00201F',
+        'light-error': '#D92D20',
+        'light-on-error': '#FFFFFF',
+        'light-error-container': '#FEE4E2',
+        'light-on-error-container': '#7A1008',
+        'light-warning': '#855300',
+        'light-on-warning': '#FFFFFF',
+        'light-warning-container': '#FEF3C7',
+        'light-on-warning-container': '#472A00',
+        'light-success': '#006E2D',
+        'light-on-success': '#FFFFFF',
+        'light-success-container': '#DCFCE7',
+        'light-on-success-container': '#002109',
+        'light-background': '#F4F7FA',
+        'light-on-background': '#1F2937',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#1F2937',
+        'light-surface-container-low': '#F8FAFC',
+        'light-surface-container': '#EEF2F6',
+        'light-surface-container-high': '#E2E8F0',
+        'light-on-surface-variant': '#4B5563',
+        'light-outline': '#6B7280',
+        'light-outline-variant': '#D1D5DB',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'DEFAULT': '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'section': '32px',
+        'page-margin': '16px',
+      },
+      fontFamily: {
+        'display': ['"Inter"', 'sans-serif'],
+        'headline': ['"Inter"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"Roboto Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.15px', fontWeight: '700' }],
+        'headline-sm': ['18px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0.1px', fontWeight: '600' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.3px', fontWeight: '600' }],
+        'mono-md': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '100ms',
+        'surface-enter': '200ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp, .material-icons { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-background text-light-on-surface font-body antialiased">
+  <div class="min-h-[884px] max-w-[430px] mx-auto bg-light-background flex flex-col pb-24 relative" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Contextual Header -->
+    <header class="sticky top-0 z-30 bg-light-surface border-b border-light-outline-variant px-gutter-lg py-gutter-md flex items-center gap-gutter-sm">
+      <a href="../user-profile/UserProfile.html" aria-label="Back to Profile" class="w-11 h-11 rounded-full hover:bg-light-surface-container-low inline-flex items-center justify-center text-light-on-surface">
+        <span class="material-symbols-outlined text-[24px]" aria-hidden="true">arrow_back</span>
+      </a>
+      <div>
+        <h1 data-design-text-token="headline-sm" class="font-headline text-headline-sm text-light-on-surface">Settings &amp; Accessibility</h1>
+        <p data-design-text-token="label-sm" class="font-label text-label-sm text-light-on-surface-variant">Alerts, Language &amp; Readability</p>
+      </div>
+    </header>
+
+    <main class="flex-1 px-gutter-lg py-gutter-lg flex flex-col gap-gutter-lg">
+
+      <!-- Alerts & Permissions -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-md">
+        <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Alerts &amp; Permissions</h2>
+        <label class="flex items-center justify-between gap-gutter-md min-h-[44px] cursor-pointer">
+          <span data-design-text-token="body-md" class="font-body text-body-md">Critical Disaster Siren Override</span>
+          <input type="checkbox" checked class="w-5 h-5 rounded border-light-outline-variant text-light-primary focus:ring-light-primary">
+        </label>
+        <label class="flex items-center justify-between gap-gutter-md min-h-[44px] cursor-pointer">
+          <span data-design-text-token="body-md" class="font-body text-body-md">Background GPS for SOS</span>
+          <input type="checkbox" checked class="w-5 h-5 rounded border-light-outline-variant text-light-primary focus:ring-light-primary">
+        </label>
+        <div class="flex items-center justify-between gap-gutter-md min-h-[44px]">
+          <span data-design-text-token="body-md" class="font-body text-body-md">Language</span>
+          <select class="min-h-[40px] px-gutter-md rounded border border-light-outline-variant text-body-md focus:border-light-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-light-primary">
+            <option selected>English</option>
+            <option>हिन्दी (Hindi)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Accessibility Controls -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-md">
+        <h2 data-design-text-token="title-md" class="font-title text-title-md text-light-primary">Accessibility</h2>
+        <label class="flex items-center justify-between gap-gutter-md min-h-[44px] cursor-pointer">
+          <span data-design-text-token="body-md" class="font-body text-body-md">Large Text Mode (Elderly Friendly)</span>
+          <input type="checkbox" class="w-5 h-5 rounded border-light-outline-variant text-light-primary focus:ring-light-primary">
+        </label>
+        <label class="flex items-center justify-between gap-gutter-md min-h-[44px] cursor-pointer">
+          <span data-design-text-token="body-md" class="font-body text-body-md">High Contrast Outlines</span>
+          <input type="checkbox" class="w-5 h-5 rounded border-light-outline-variant text-light-primary focus:ring-light-primary">
+        </label>
+        <label class="flex items-center justify-between gap-gutter-md min-h-[44px] cursor-pointer">
+          <span data-design-text-token="body-md" class="font-body text-body-md">Reduced Motion</span>
+          <input type="checkbox" checked class="w-5 h-5 rounded border-light-outline-variant text-light-primary focus:ring-light-primary">
+        </label>
+      </section>
+
+      <!-- Offline & Account -->
+      <section class="bg-light-surface rounded-md border border-light-outline-variant p-gutter-lg flex flex-col gap-gutter-sm">
+        <a href="../offline-mode/OfflineMode.html" class="min-h-[44px] flex items-center justify-between text-light-primary font-label text-label-lg">
+          <span>Manage Offline Downloads (42 MB)</span>
+          <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+        </a>
+        <a href="../login/Login.html" class="min-h-[44px] flex items-center justify-between text-light-error font-label text-label-lg">
+          <span>Sign Out</span>
+          <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+        </a>
+      </section>
+
+    </main>
+
+    <!-- Floating SOS Button -->
+    <a href="../emergency-sos/EmergencySOS.html" aria-label="Emergency SOS" class="fixed bottom-6 right-4 z-40 w-14 h-14 rounded-full bg-light-error text-light-on-error shadow-lg hover:opacity-95 inline-flex flex-col items-center justify-center border-2 border-light-surface">
+      <span data-design-text-token="label-lg" class="font-label text-label-lg leading-none">SOS</span>
+    </a>
+  </div>
+
+
+</body></html>

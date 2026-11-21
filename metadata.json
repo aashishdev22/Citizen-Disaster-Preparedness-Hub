@@ -1,0 +1,8 @@
+{
+  "name": "Citizen Disaster Preparedness Hub",
+  "description": "Civic disaster preparedness hub with live IMD/NDMA alerts, Emergency SOS (112), safe shelter evacuation maps, offline safety guides, emergency kit checklists, incident reporting, and family check-ins.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
