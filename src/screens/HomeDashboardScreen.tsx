@@ -3,9 +3,10 @@ import { AppShell, Icon, SafeImage } from '../components/Shell';
 import { useApp } from '../state/AppContext';
 import { LOCATION_OPTIONS, WATERLOGGING_IMAGE_URL } from '../data/seedData';
 import { ScreenId } from '../types';
+import { formatCoordinatesWithAccuracy } from '../utils/gps';
 
 export function HomeDashboardScreen() {
-  const { user, updateUser, navigate, preparedness, unreadCount, showToast } = useApp();
+  const { user, updateUser, navigate, preparedness, unreadCount, showToast, gps, fetchLiveGps } = useApp();
   const [locationModalOpen, setLocationModalOpen] = useState(false);
 
   const quickActions: {
@@ -835,6 +836,36 @@ export function HomeDashboardScreen() {
               </button>
             </div>
             <div className="flex flex-col gap-gutter-sm">
+              <button
+                type="button"
+                data-testid="home-live-gps-btn"
+                disabled={gps.status === 'locating'}
+                onClick={async () => {
+                  const coords = await fetchLiveGps({ updateProfileLocation: true });
+                  if (coords) {
+                    setLocationModalOpen(false);
+                  }
+                }}
+                className="min-h-[48px] px-gutter-md py-gutter-sm rounded bg-light-secondary text-light-on-secondary font-label text-label-lg flex items-center justify-center gap-gutter-xs hover:opacity-95 disabled:opacity-60"
+              >
+                <Icon
+                  name={gps.status === 'locating' ? 'gps_not_fixed' : 'my_location'}
+                  className={`text-[20px] ${gps.status === 'locating' ? 'animate-spin' : ''}`}
+                />
+                <span>
+                  {gps.status === 'locating' ? 'Fetching Live GPS...' : 'Use Live GPS Location'}
+                </span>
+              </button>
+              {gps.source === 'live' && gps.coords && (
+                <p className="font-mono text-label-sm text-light-success text-center tabular-nums">
+                  Last live fix: {formatCoordinatesWithAccuracy(gps.coords)}
+                </p>
+              )}
+              {gps.status === 'error' && gps.error && (
+                <p className="font-body text-body-sm text-light-error bg-light-error-container/40 rounded px-gutter-sm py-gutter-xs">
+                  {gps.error}
+                </p>
+              )}
               {LOCATION_OPTIONS.map((opt) => {
                 const selected = user.locationLabel === opt.label;
                 return (

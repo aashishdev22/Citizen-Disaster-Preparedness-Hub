@@ -223,3 +223,25 @@ export interface WeatherForecastSnapshot {
   risks: WeatherRiskAssessment[];
   outlook: WeatherOutlookDay[];
 }
+
+export type GpsStatus = 'idle' | 'locating' | 'locked' | 'watching' | 'error';
+
+export interface GpsCoordinates {
+  latitude: number;
+  longitude: number;
+  accuracy: number;
+  altitude?: number | null;
+  speed?: number | null;
+  timestamp: number;
+}
+
+export interface GpsState {
+  status: GpsStatus;
+  coords: GpsCoordinates | null;
+  localityLabel: string | null;
+  districtLabel: string | null;
+  error: string | null;
+  isWatching: boolean;
+  source: 'live' | 'cached' | 'default';
+}
+

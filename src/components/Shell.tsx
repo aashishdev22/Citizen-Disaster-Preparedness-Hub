@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ScreenId } from '../types';
 import { useApp } from '../state/AppContext';
+import { OfflineIndicator, PWAInstallButton } from './PWAControls';
 
 export function Icon({
   name,
@@ -166,20 +167,23 @@ export function DesktopSidebar() {
         </nav>
       </div>
 
-      {/* Offline Readiness Footer */}
-      <button
-        type="button"
-        onClick={() => navigate('offline')}
-        className="mt-gutter-lg p-gutter-md rounded bg-light-on-primary/10 hover:bg-light-on-primary/15 flex flex-col gap-gutter-xs text-left transition-colors"
-      >
-        <div className="flex items-center gap-gutter-xs">
-          <span className="w-2 h-2 rounded-full bg-success-green" aria-hidden="true" />
-          <span className="font-label text-label-sm text-light-on-primary">Offline Pack Synced</span>
-        </div>
-        <span className="font-label text-label-sm text-light-primary-container">
-          Guides &amp; 112 ready offline
-        </span>
-      </button>
+      {/* Install & Offline Readiness Footer */}
+      <div className="mt-gutter-lg flex flex-col gap-gutter-sm">
+        <PWAInstallButton variant="sidebar" />
+        <button
+          type="button"
+          onClick={() => navigate('offline')}
+          className="p-gutter-md rounded bg-light-on-primary/10 hover:bg-light-on-primary/15 flex flex-col gap-gutter-xs text-left transition-colors"
+        >
+          <div className="flex items-center gap-gutter-xs">
+            <span className="w-2 h-2 rounded-full bg-success-green" aria-hidden="true" />
+            <span className="font-label text-label-sm text-light-on-primary">Offline Pack Synced</span>
+          </div>
+          <span className="font-label text-label-sm text-light-primary-container">
+            Guides &amp; 112 ready offline
+          </span>
+        </button>
+      </div>
     </aside>
   );
 }
@@ -341,6 +345,7 @@ export function AppShell({
       </div>
       {showFloatingSos && <FloatingSosButton hasBottomNav={showBottomNav} />}
       {showBottomNav && <MobileBottomNav />}
+      <OfflineIndicator />
     </div>
   );
 }

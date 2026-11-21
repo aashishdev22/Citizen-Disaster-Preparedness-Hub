@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { AppShell, Icon, SafeImage } from '../components/Shell';
 import { useApp } from '../state/AppContext';
 import { filterShelters } from '../utils/preparedness';
+import { formatCoordinates, formatCoordinatesWithAccuracy } from '../utils/gps';
 import { ShelterItem, ShelterType } from '../types';
 
 function shelterColors(type: ShelterType) {
@@ -34,10 +35,24 @@ function shelterColors(type: ShelterType) {
 }
 
 export function SafeShelterMapScreen() {
-  const { shelters, selectedShelterId, setSelectedShelterId, navigate, user, showToast } = useApp();
+  const {
+    shelters,
+    selectedShelterId,
+    setSelectedShelterId,
+    navigate,
+    user,
+    showToast,
+    gps,
+    fetchLiveGps,
+  } = useApp();
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [query, setQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<ShelterType | 'all'>('all');
+
+  const livePinLabel =
+    gps.source === 'live' && gps.coords
+      ? `You (${formatCoordinates(gps.coords.latitude, gps.coords.longitude)})`
+      : `You (${user.locationLabel.split(',')[0]})`;
 
   const filtered = useMemo(
     () => filterShelters(shelters, query, typeFilter),
@@ -116,11 +131,34 @@ export function SafeShelterMapScreen() {
         className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none"
         style={{ left: '47%', top: '51%' }}
       >
-        <span className="w-5 h-5 rounded-full bg-light-primary border-2 border-light-surface shadow-md" />
-        <span className="font-label text-label-sm bg-light-primary text-light-on-primary px-gutter-xs rounded mt-0.5 whitespace-nowrap">
-          You (Dadar West)
+        <span
+          className={`w-5 h-5 rounded-full border-2 border-light-surface shadow-md ${
+            gps.source === 'live' ? 'bg-light-success ring-4 ring-light-success/25' : 'bg-light-primary'
+          }`}
+        />
+        <span
+          data-testid="map-user-pin-label"
+          className="font-label text-label-sm bg-light-primary text-light-on-primary px-gutter-xs rounded mt-0.5 whitespace-nowrap"
+        >
+          {livePinLabel}
         </span>
       </div>
+
+      {/* Live GPS Locate Me Control */}
+      <button
+        type="button"
+        data-testid="map-locate-gps-btn"
+        disabled={gps.status === 'locating'}
+        onClick={() => void fetchLiveGps({ updateProfileLocation: true })}
+        aria-label="Fetch live GPS location"
+        className="absolute bottom-3 right-3 z-20 min-h-[40px] px-gutter-md py-gutter-xs rounded-full bg-light-surface border border-light-outline-variant shadow-md text-light-primary font-label text-label-sm inline-flex items-center gap-gutter-xs hover:bg-light-surface-container-low disabled:opacity-60"
+      >
+        <Icon
+          name={gps.status === 'locating' ? 'gps_not_fixed' : 'my_location'}
+          className={`text-[18px] text-light-secondary ${gps.status === 'locating' ? 'animate-spin' : ''}`}
+        />
+        <span>{gps.status === 'locating' ? 'Locating...' : 'Locate Me'}</span>
+      </button>
 
       {/* Interactive Shelter / Hospital / Fire Markers */}
       {filtered.map((item) => {
@@ -161,7 +199,9 @@ export function SafeShelterMapScreen() {
               Safe Shelter &amp; Services
             </p>
             <p className="font-title text-title-md text-light-on-primary truncate">
-              Dadar West • 5 km radius
+              {gps.source === 'live' && gps.coords
+                ? formatCoordinatesWithAccuracy(gps.coords)
+                : `${user.locationLabel.split(',')[0]} • 5 km radius`}
             </p>
           </div>
         </div>
@@ -199,8 +239,10 @@ export function SafeShelterMapScreen() {
           <h1 className="font-headline text-headline-sm text-light-on-surface">
             Safe Shelter &amp; Emergency Map
           </h1>
-          <p className="font-label text-label-md text-light-on-surface-variant">
-            Dadar West, Mumbai • 5 km Evacuation Radius
+          <p className="font-label text-label-md text-light-on-surface-variant tabular-nums">
+            {gps.source === 'live' && gps.coords
+              ? `${gps.localityLabel || user.locationLabel} • Live GPS ${formatCoordinatesWithAccuracy(gps.coords)}`
+              : `${user.locationLabel} • 5 km Evacuation Radius`}
           </p>
         </div>
         <div className="flex items-center gap-gutter-md">

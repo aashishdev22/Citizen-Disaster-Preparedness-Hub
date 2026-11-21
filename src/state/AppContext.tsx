@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AccessibilitySettings,
   AlertItem,
@@ -7,6 +7,8 @@ import {
   EmergencyContact,
   EvacuationPlan,
   FamilyMember,
+  GpsCoordinates,
+  GpsState,
   IncidentReport,
   KitItem,
   Language,
@@ -39,6 +41,14 @@ import {
   saveWeatherSnapshot,
   wasWeatherCacheCleared,
 } from '../utils/weatherCache';
+import {
+  DEFAULT_DEMO_COORDS,
+  formatCoordinatesWithAccuracy,
+  loadLastGpsCoords,
+  mapGeolocationError,
+  resolveNearestLocality,
+  saveLastGpsCoords,
+} from '../utils/gps';
 
 interface ToastState {
   id: number;
@@ -100,6 +110,12 @@ interface AppContextValue {
   cachedWeather: WeatherForecastSnapshot | null;
   cacheLatestWeather: (options?: { silent?: boolean }) => boolean;
   clearCachedWeather: () => void;
+  gps: GpsState;
+  fetchLiveGps: (options?: {
+    updateProfileLocation?: boolean;
+    silent?: boolean;
+  }) => Promise<GpsCoordinates | null>;
+  toggleLiveGpsTracking: () => void;
   toast: ToastState | null;
   showToast: (message: string, variant?: ToastState['variant']) => void;
   dismissToast: () => void;
@@ -226,6 +242,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveWeatherSnapshot(initial);
     return initial;
   });
+  const [gps, setGps] = useState<GpsState>(() => {
+    const cached = loadLastGpsCoords();
+    if (cached) {
+      const resolved = resolveNearestLocality(cached.latitude, cached.longitude);
+      return {
+        status: 'idle',
+        coords: cached,
+        localityLabel: resolved.label,
+        districtLabel: resolved.district,
+        error: null,
+        isWatching: false,
+        source: 'cached',
+      };
+    }
+    return {
+      status: 'idle',
+      coords: DEFAULT_DEMO_COORDS,
+      localityLabel: 'Shivaji Park, Dadar West',
+      districtLabel: INITIAL_USER.districtState,
+      error: null,
+      isWatching: false,
+      source: 'default',
+    };
+  });
+  const gpsWatchIdRef = useRef<number | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   useEffect(() => {
@@ -535,6 +576,134 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     showToast('Cached offline weather forecast removed from local storage.', 'info');
   }, [showToast]);
 
+  const applyGpsPosition = useCallback(
+    (
+      position: GeolocationPosition,
+      options?: { updateProfileLocation?: boolean; watching?: boolean }
+    ): GpsCoordinates => {
+      const coords: GpsCoordinates = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy ?? 10,
+        altitude: position.coords.altitude,
+        speed: position.coords.speed,
+        timestamp: position.timestamp || Date.now(),
+      };
+      saveLastGpsCoords(coords);
+      const resolved = resolveNearestLocality(coords.latitude, coords.longitude);
+      setGps((prev) => ({
+        status: options?.watching || prev.isWatching ? 'watching' : 'locked',
+        coords,
+        localityLabel: resolved.label,
+        districtLabel: resolved.district,
+        error: null,
+        isWatching: options?.watching ?? prev.isWatching,
+        source: 'live',
+      }));
+      if (options?.updateProfileLocation) {
+        setUser((prev) => ({
+          ...prev,
+          locationLabel: resolved.label,
+          districtState: resolved.district,
+        }));
+      }
+      return coords;
+    },
+    []
+  );
+
+  const fetchLiveGps = useCallback(
+    (options?: { updateProfileLocation?: boolean; silent?: boolean }): Promise<GpsCoordinates | null> => {
+      if (typeof navigator === 'undefined' || !navigator.geolocation) {
+        const message = mapGeolocationError(undefined);
+        setGps((prev) => ({ ...prev, status: 'error', error: message }));
+        if (!options?.silent) showToast(message, 'error');
+        return Promise.resolve(null);
+      }
+
+      setGps((prev) => ({ ...prev, status: 'locating', error: null }));
+
+      return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const coords = applyGpsPosition(position, {
+              updateProfileLocation: options?.updateProfileLocation,
+            });
+            if (!options?.silent) {
+              showToast(`Live GPS locked: ${formatCoordinatesWithAccuracy(coords)}`, 'success');
+            }
+            resolve(coords);
+          },
+          (err) => {
+            const message = mapGeolocationError(err.code, err.message);
+            setGps((prev) => ({ ...prev, status: 'error', error: message }));
+            if (!options?.silent) showToast(message, 'error');
+            resolve(null);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 5000,
+          }
+        );
+      });
+    },
+    [applyGpsPosition, showToast]
+  );
+
+  const toggleLiveGpsTracking = useCallback(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      const message = mapGeolocationError(undefined);
+      setGps((prev) => ({ ...prev, status: 'error', error: message, isWatching: false }));
+      showToast(message, 'error');
+      return;
+    }
+
+    if (gpsWatchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+      gpsWatchIdRef.current = null;
+      setGps((prev) => ({
+        ...prev,
+        isWatching: false,
+        status: prev.source === 'live' ? 'locked' : 'idle',
+      }));
+      showToast('Live GPS tracking paused.', 'info');
+      return;
+    }
+
+    setGps((prev) => ({ ...prev, status: 'locating', error: null, isWatching: true }));
+    showToast('Started continuous live GPS tracking.', 'info');
+
+    gpsWatchIdRef.current = navigator.geolocation.watchPosition(
+      (position) => {
+        applyGpsPosition(position, { watching: true });
+      },
+      (err) => {
+        const message = mapGeolocationError(err.code, err.message);
+        if (gpsWatchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+          gpsWatchIdRef.current = null;
+        }
+        setGps((prev) => ({ ...prev, status: 'error', error: message, isWatching: false }));
+        showToast(message, 'error');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 3000,
+      }
+    );
+  }, [applyGpsPosition, showToast]);
+
+  useEffect(() => {
+    return () => {
+      if (gpsWatchIdRef.current !== null && typeof navigator !== 'undefined' && navigator.geolocation) {
+        navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+        gpsWatchIdRef.current = null;
+      }
+    };
+  }, []);
+
   const value: AppContextValue = {
     screen,
     navigate,
@@ -582,6 +751,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     cachedWeather,
     cacheLatestWeather,
     clearCachedWeather,
+    gps,
+    fetchLiveGps,
+    toggleLiveGpsTracking,
     toast,
     showToast,
     dismissToast,

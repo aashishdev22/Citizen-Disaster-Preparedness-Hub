@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppShell, ContextualHeader, Icon } from '../components/Shell';
+import { PWAInstallButton } from '../components/PWAControls';
 import { useApp } from '../state/AppContext';
 import { Language } from '../types';
 
@@ -134,6 +135,41 @@ export function SettingsAccessibilityScreen() {
               className="w-5 h-5 accent-light-secondary shrink-0 cursor-pointer"
             />
           </label>
+        </section>
+
+        {/* Install Mobile App & APK Packaging */}
+        <section
+          aria-labelledby="pwa-install-section-heading"
+          className="bg-light-surface border border-light-outline-variant rounded-md p-gutter-lg flex flex-col gap-gutter-md"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-gutter-md">
+            <div>
+              <h2
+                id="pwa-install-section-heading"
+                className="font-title text-title-md text-light-on-surface"
+              >
+                Install App &amp; Android APK Packaging
+              </h2>
+              <p className="font-body text-body-sm text-light-on-surface-variant mt-0.5">
+                PWA manifest, offline service worker, maskable icons, and Capacitor config are ready for one-tap install or PWABuilder APK packaging.
+              </p>
+            </div>
+            <PWAInstallButton variant="card" showFallbackInSettings />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-gutter-sm pt-gutter-xs border-t border-light-outline-variant">
+            <div className="p-gutter-sm rounded bg-light-surface-container-low">
+              <p className="font-label text-label-md text-light-on-surface">PWABuilder APK</p>
+              <p className="font-body text-body-sm text-light-on-surface-variant">
+                Paste your shared live app URL into pwabuilder.com to generate a signed Android APK/AAB.
+              </p>
+            </div>
+            <div className="p-gutter-sm rounded bg-light-surface-container-low">
+              <p className="font-label text-label-md text-light-on-surface">Capacitor Android Studio</p>
+              <p className="font-mono text-mono-sm text-light-on-surface-variant">
+                npm run build &amp;&amp; npx cap add android
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Storage & Account */}

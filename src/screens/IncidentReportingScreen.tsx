@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppShell, ContextualHeader, Icon, SafeImage } from '../components/Shell';
 import { useApp } from '../state/AppContext';
+import { formatCoordinates, resolveNearestLocality } from '../utils/gps';
 
 const INCIDENT_TYPES = [
   'Flooded Road / Waterlogging',
@@ -12,15 +13,36 @@ const INCIDENT_TYPES = [
 ];
 
 export function IncidentReportingScreen() {
-  const { reports, addIncidentReport, showToast } = useApp();
+  const { reports, addIncidentReport, showToast, gps, fetchLiveGps } = useApp();
   const [tab, setTab] = useState<'new' | 'list'>('new');
   const [incidentType, setIncidentType] = useState(INCIDENT_TYPES[0]);
   const [severity, setSeverity] = useState<'Low' | 'High' | 'Critical'>('High');
   const [hasPhoto, setHasPhoto] = useState(false);
   const [hasVideo, setHasVideo] = useState(false);
-  const [location, setLocation] = useState('Dadar TT Circle, Mumbai (19.0178° N, 72.8478° E)');
+  const [location, setLocation] = useState(() => {
+    if (gps.source === 'live' && gps.coords) {
+      const resolved = resolveNearestLocality(gps.coords.latitude, gps.coords.longitude);
+      return `${resolved.label} (${formatCoordinates(gps.coords.latitude, gps.coords.longitude)})`;
+    }
+    return 'Dadar TT Circle, Mumbai (19.0178° N, 72.8478° E)';
+  });
+  const [locating, setLocating] = useState(false);
+  const [gpsMeta, setGpsMeta] = useState<string | null>(null);
   const [description, setDescription] = useState('');
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
+
+  const handleFetchIncidentGps = async () => {
+    setLocating(true);
+    const coords = await fetchLiveGps();
+    setLocating(false);
+    if (coords) {
+      const resolved = resolveNearestLocality(coords.latitude, coords.longitude);
+      const formatted = formatCoordinates(coords.latitude, coords.longitude);
+      const label = resolved.matchedKnown ? `${resolved.label} (${formatted})` : formatted;
+      setLocation(label);
+      setGpsMeta(`Live GPS locked • ±${Math.max(1, Math.round(coords.accuracy))}m accuracy`);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,6 +199,7 @@ export function IncidentReportingScreen() {
               <div className="flex items-center gap-gutter-sm">
                 <input
                   id="inc-loc"
+                  data-testid="incident-gps-input"
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
@@ -185,16 +208,28 @@ export function IncidentReportingScreen() {
                 />
                 <button
                   type="button"
-                  onClick={() => {
-                    setLocation('Dadar TT Circle, Mumbai (19.0178° N, 72.8478° E)');
-                    showToast('GPS coordinates refreshed (±6m accuracy).', 'info');
-                  }}
-                  aria-label="Refresh GPS location"
-                  className="w-12 h-12 rounded border border-light-outline-variant bg-light-surface-container-low text-light-secondary inline-flex items-center justify-center hover:bg-light-surface-container shrink-0"
+                  data-testid="incident-fetch-gps-btn"
+                  disabled={locating}
+                  onClick={() => void handleFetchIncidentGps()}
+                  aria-label="Fetch live GPS location"
+                  title="Fetch live GPS location"
+                  className="h-12 px-gutter-md rounded border border-light-outline-variant bg-light-surface-container-low text-light-secondary inline-flex items-center justify-center gap-gutter-xs hover:bg-light-surface-container shrink-0 font-label text-label-sm disabled:opacity-60"
                 >
-                  <Icon name="my_location" className="text-[20px]" />
+                  <Icon
+                    name={locating ? 'gps_not_fixed' : 'my_location'}
+                    className={`text-[20px] ${locating ? 'animate-spin' : ''}`}
+                  />
+                  <span className="hidden sm:inline">{locating ? 'Locating...' : 'Live GPS'}</span>
                 </button>
               </div>
+              {gpsMeta && (
+                <p data-testid="incident-gps-meta" className="font-label text-label-sm text-light-success">
+                  {gpsMeta}
+                </p>
+              )}
+              {gps.status === 'error' && gps.error && (
+                <p className="font-body text-body-sm text-light-error">{gps.error}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-gutter-xs">

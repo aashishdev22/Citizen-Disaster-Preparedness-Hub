@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { AppShell, ContextualHeader, Icon } from '../components/Shell';
 import { useApp } from '../state/AppContext';
+import {
+  buildShareLocationText,
+  DEFAULT_DEMO_COORDS,
+  formatCoordinatesWithAccuracy,
+  formatGpsTimestamp,
+} from '../utils/gps';
 
 type SosState = 'ready' | 'countdown' | 'active' | 'canceled';
 
@@ -12,10 +18,74 @@ const EMERGENCY_TYPES = [
 ];
 
 export function EmergencySosScreen() {
-  const { navigate, showToast, familyMembers } = useApp();
+  const {
+    navigate,
+    showToast,
+    familyMembers,
+    gps,
+    fetchLiveGps,
+    toggleLiveGpsTracking,
+    user,
+  } = useApp();
   const [sosState, setSosState] = useState<SosState>('ready');
   const [selectedType, setSelectedType] = useState(EMERGENCY_TYPES[0]);
   const [countdown, setCountdown] = useState<number>(3);
+
+  const activeCoords = gps.coords ?? DEFAULT_DEMO_COORDS;
+  const displayLocality = gps.localityLabel || user.locationLabel;
+  const formattedCoords = formatCoordinatesWithAccuracy(activeCoords);
+
+  const handleShareLiveLocation = async () => {
+    const freshCoords = gps.source === 'live' ? activeCoords : (await fetchLiveGps({ silent: true })) ?? activeCoords;
+    const shareText = buildShareLocationText(freshCoords, displayLocality);
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareText);
+      }
+    } catch {
+      // Clipboard may be restricted in sandboxed iframes; still notify user
+    }
+    showToast(
+      `Live GPS (${formatCoordinatesWithAccuracy(freshCoords)}) copied & shared with family contacts.`,
+      'success'
+    );
+  };
+
+  const gpsBadge = (() => {
+    if (gps.status === 'locating') {
+      return {
+        label: 'Locating...',
+        pillClass: 'bg-light-warning-container text-light-on-warning-container',
+        dotClass: 'bg-light-warning animate-pulse',
+      };
+    }
+    if (gps.status === 'error') {
+      return {
+        label: 'GPS Error',
+        pillClass: 'bg-light-error-container text-light-on-error-container',
+        dotClass: 'bg-light-error',
+      };
+    }
+    if (gps.isWatching || gps.status === 'watching') {
+      return {
+        label: 'Live Tracking',
+        pillClass: 'bg-light-success-container text-light-on-success-container',
+        dotClass: 'bg-light-success animate-pulse',
+      };
+    }
+    if (gps.status === 'locked' || gps.source === 'live') {
+      return {
+        label: 'Live GPS Locked',
+        pillClass: 'bg-light-success-container text-light-on-success-container',
+        dotClass: 'bg-light-success',
+      };
+    }
+    return {
+      label: gps.source === 'cached' ? 'Cached GPS' : 'Ready to Fetch',
+      pillClass: 'bg-light-secondary-container text-light-on-secondary-container',
+      dotClass: 'bg-light-secondary',
+    };
+  })();
 
   useEffect(() => {
     if (sosState !== 'countdown') return;
@@ -67,28 +137,87 @@ export function EmergencySosScreen() {
         {/* Live GPS Coordinates Banner */}
         <section
           aria-label="Current GPS Location"
-          className="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex items-center justify-between gap-gutter-md"
+          data-testid="sos-gps-banner"
+          className="bg-light-surface rounded-md border border-light-outline-variant p-gutter-md flex flex-col gap-gutter-sm"
         >
-          <div className="flex items-center gap-gutter-md min-w-0">
-            <span className="w-10 h-10 rounded-full bg-light-primary-container text-light-on-primary-container inline-flex items-center justify-center shrink-0">
-              <Icon name="my_location" className="text-[20px]" />
+          <div className="flex items-start justify-between gap-gutter-sm">
+            <div className="flex items-center gap-gutter-md min-w-0">
+              <span className="w-10 h-10 rounded-full bg-light-primary-container text-light-on-primary-container inline-flex items-center justify-center shrink-0">
+                <Icon
+                  name={gps.status === 'locating' ? 'gps_not_fixed' : 'my_location'}
+                  className={`text-[20px] ${gps.status === 'locating' ? 'animate-spin' : ''}`}
+                />
+              </span>
+              <div className="min-w-0">
+                <p
+                  data-testid="sos-gps-locality"
+                  className="font-label text-label-md text-light-on-surface truncate"
+                >
+                  {displayLocality}
+                </p>
+                <p
+                  data-testid="sos-gps-coords"
+                  className="font-mono text-mono-md text-light-on-surface-variant tabular-nums"
+                >
+                  {formattedCoords}
+                </p>
+              </div>
+            </div>
+            <span
+              role="status"
+              data-testid="sos-gps-status"
+              className={`inline-flex items-center gap-gutter-xs px-gutter-sm py-gutter-xs rounded-full shrink-0 ${gpsBadge.pillClass}`}
+            >
+              <span className={`w-2 h-2 rounded-full ${gpsBadge.dotClass}`} aria-hidden="true" />
+              <span className="font-label text-label-sm">{gpsBadge.label}</span>
             </span>
-            <div className="min-w-0">
-              <p className="font-label text-label-md text-light-on-surface">
-                Shivaji Park, Dadar West, Mumbai
-              </p>
-              <p className="font-mono text-mono-md text-light-on-surface-variant tabular-nums">
-                19.0270° N, 72.8397° E • ±8m
-              </p>
+          </div>
+
+          {gps.error && (
+            <p
+              role="alert"
+              data-testid="sos-gps-error"
+              className="font-body text-body-sm text-light-error bg-light-error-container/50 rounded px-gutter-sm py-gutter-xs"
+            >
+              {gps.error}
+            </p>
+          )}
+
+          <div className="flex flex-wrap items-center justify-between gap-gutter-sm pt-gutter-xs border-t border-light-outline-variant">
+            <span className="font-label text-label-sm text-light-on-surface-variant tabular-nums">
+              {gps.source === 'live'
+                ? `Updated ${formatGpsTimestamp(activeCoords.timestamp)}`
+                : gps.source === 'cached'
+                  ? `Last saved fix • ${formatGpsTimestamp(activeCoords.timestamp)}`
+                  : 'Tap Fetch GPS for real-time satellite lock'}
+            </span>
+            <div className="flex items-center gap-gutter-xs">
+              <button
+                type="button"
+                data-testid="sos-fetch-gps-btn"
+                onClick={() => void fetchLiveGps()}
+                disabled={gps.status === 'locating'}
+                className="min-h-[36px] px-gutter-sm py-1 rounded bg-light-primary text-light-on-primary font-label text-label-sm inline-flex items-center gap-1 hover:opacity-95 disabled:opacity-60"
+              >
+                <Icon name="my_location" className="text-[16px]" />
+                <span>{gps.status === 'locating' ? 'Locating...' : 'Fetch GPS'}</span>
+              </button>
+              <button
+                type="button"
+                data-testid="sos-live-track-btn"
+                onClick={toggleLiveGpsTracking}
+                aria-pressed={gps.isWatching}
+                className={`min-h-[36px] px-gutter-sm py-1 rounded border font-label text-label-sm inline-flex items-center gap-1 transition-colors ${
+                  gps.isWatching
+                    ? 'border-light-success bg-light-success-container text-light-on-success-container'
+                    : 'border-light-outline-variant bg-light-surface text-light-primary hover:bg-light-surface-container-low'
+                }`}
+              >
+                <Icon name={gps.isWatching ? 'stop_circle' : 'sensors'} className="text-[16px]" />
+                <span>{gps.isWatching ? 'Stop Tracking' : 'Live Track'}</span>
+              </button>
             </div>
           </div>
-          <span
-            role="status"
-            className="inline-flex items-center gap-gutter-xs px-gutter-sm py-gutter-xs rounded-full bg-light-success-container text-light-on-success-container shrink-0"
-          >
-            <span className="w-2 h-2 rounded-full bg-light-success" aria-hidden="true" />
-            <span className="font-label text-label-sm">GPS Locked</span>
-          </span>
         </section>
 
         {/* State Switcher Tabs */}
@@ -184,12 +313,7 @@ export function EmergencySosScreen() {
               </a>
               <button
                 type="button"
-                onClick={() =>
-                  showToast(
-                    'Live location link copied & shared with Meera Sharma, Rajesh Sharma.',
-                    'success'
-                  )
-                }
+                onClick={() => void handleShareLiveLocation()}
                 className="min-h-[48px] px-gutter-lg py-gutter-md rounded-md bg-light-surface border border-light-outline-variant text-light-primary flex items-center justify-center gap-gutter-sm font-label text-label-lg hover:bg-light-surface-container-low"
               >
                 <Icon name="share_location" className="text-[20px]" />
@@ -254,11 +378,14 @@ export function EmergencySosScreen() {
                 </span>
                 <span className="font-label text-label-sm text-light-success">SMS + App Sent</span>
               </div>
-              <div className="flex items-center justify-between py-gutter-xs">
+              <div className="flex items-center justify-between py-gutter-xs gap-gutter-sm">
                 <span className="font-body text-body-md text-light-on-surface">
                   Live GPS Tracking
                 </span>
-                <span className="font-label text-label-sm text-light-secondary">Streaming</span>
+                <span className="font-mono text-label-sm text-light-secondary tabular-nums text-right">
+                  {gps.isWatching ? 'Streaming • ' : ''}
+                  {formattedCoords}
+                </span>
               </div>
             </div>
 
